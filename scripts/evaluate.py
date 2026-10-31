@@ -212,25 +212,26 @@ print(json.dumps({"headline": out["headline"], "baselines": out["baselines"], "n
 
 if not args.stub:
     md = []
-    md.append("# 評估（EVAL）\n")
-    md.append("跑法：`.venv/bin/python scripts/evaluate.py`。Agent 用 %s。\n" % ("claude-haiku-5-5" if has_key else "規則版（沒有 API key）"))
-    md.append("## 跑了什麼\n")
-    md.append("- %d 筆真實 ATL 到達（`data/pool.json`，從 DOT 2015 資料篩出，開發時沒拿來調參數）× %d 組條件 = %d 場\n" % (len(load_pool()), len(CONDITION_SETS), n))
+    md.append("# Evaluation\n\n")
+    md.append("How to run: `.venv/bin/python scripts/evaluate.py`. Agents: %s.\n\n" % ("claude-haiku-5-5" if has_key else "rule-based fallback (no API key)"))
+    md.append("## What we ran\n\n")
+    md.append("- %d real ATL arrivals (`data/pool.json`, picked from the DOT 2015 data, never used to tune anything) x %d condition sets = %d runs\n" % (len(load_pool()), len(CONDITION_SETS), n))
     for label, env in CONDITION_SETS:
         md.append("  - %s\n" % label)
-    md.append("\n## 數字\n\n| | 平均延誤（分） | 錯過轉機（人次） | 地勤加班（分） |\n|---|---|---|---|\n")
+    md.append("\n## Numbers\n\n| | Avg delay (min) | Missed connections | Ramp overtime (min) |\n|---|---|---|---|\n")
     for b in out["baselines"]:
         md.append("| %s | %s | %s | %s |\n" % (b["name"], b["avg_delay_min"], b["missed_connections"], b["overtime_min"]))
-    md.append("\n- 3 輪內達成共識：%d / %d（%.0f%%）\n" % (consensus, n, 100 * consensus / n if n else 0))
-    md.append("- 注入違規提案被規則層擋下：%s\n" % out["headline"]["injected_violations_blocked"])
-    md.append("- 零合法候選（no_safe_plan，不算進平均）：%d 場；有合法選項但協商沒回方案：%d 場\n" % (len(no_plan), len(neg_failed)))
+    md.append("\n- Consensus within 3 rounds: %d / %d (%.0f%%)\n" % (consensus, n, 100 * consensus / n if n else 0))
+    md.append("- Injected illegal proposals blocked by the rule layer: %s\n" % out["headline"]["injected_violations_blocked"])
+    md.append("- Zero legal candidates (no_safe_plan, excluded from averages): %d runs; legal options existed but the negotiation returned no plan: %d runs\n" % (len(no_plan), len(neg_failed)))
     by_set = {}
     for r in results:
         if r["concord"] is not None and not r["no_legal"]:
             by_set.setdefault(r["label"], []).append(r["fcfs"]["delay_min"] - r["concord"]["delay_min"])
-    md.append("- FCFS 和 Concord 的差距，按條件組拆開（分鐘，正數 = Concord 較好）：" + "；".join("%s %.1f" % (k, avg(v)) for k, v in by_set.items()) + "。差距主要來自登機口緊張的那組，因為 FCFS 不協調登機口就得在滑行道等。\n")
-    md.append("- 平均每場 %.1f 秒、%.0f tokens\n" % (avg([r["elapsed_s"] for r in results]), avg([r["tokens"] for r in results])))
-    md.append("\n## 失敗案例\n\n- row %s：%s\n- 發生了什麼：%s\n- 為什麼：%s\n- 怎麼修：%s\n" % (failure["row_id"], failure["summary"], failure["what_happened"], failure["why"], failure["fix"]))
-    md.append("\n## 基準線怎麼算\n\n- FCFS（現狀）：塔台給最早安全的跑道時段（尾流、容量、油量），飛機去原登機口；門被佔就在滑行道等到門空出來，那段等待算進延誤。這模擬今天各部門只看自己資料、靠電話協調的情況。\n- Concord：三個 agent 協商後 Chief 定案的方案。\n- 全知最佳化：看得到所有資料，直接選合法候選裡軟成本最低的，是理論上限。\n\n## 限制\n\n- 登機口、油量、機組、轉機旅客、尾流等級是模擬的，由評審選的條件決定（`src/scenario.py`）。航班、延誤、原因、到達隊列是真的。\n- 只處理一班飛機，不處理連鎖影響。\n- 規則是簡化版：尾流用時間間隔代替海里，容量用真實到達量乘天氣係數，油量用分鐘數。見 `data/rules.json` 的 simplification。\n- 評估跑在我們自己的模擬器裡，基準線用同一套規則算。數字是相對比較，不是真實營運數據。\n- flights.csv 是 358,774 筆的子集，到達隊列密度約為真實的 6%%。\n")
+    md.append("- FCFS minus Concord delay per condition set (min, positive = Concord better): " + "; ".join("%s %.1f" % (k, avg(v)) for k, v in by_set.items()) + ". Most of the gap comes from the tight-gates set, where FCFS waits on the taxiway because nobody coordinated the gate.\n")
+    md.append("- Average per run: %.1f s, %.0f tokens\n" % (avg([r["elapsed_s"] for r in results]), avg([r["tokens"] for r in results])))
+    md.append("\n## Failure case\n\n- row %s: %s\n- What happened: %s\n- Why: %s\n- Fix: %s\n" % (failure["row_id"], failure["summary"], failure["what_happened"], failure["why"], failure["fix"]))
+    md.append("\n## How the baselines are computed\n\n- FCFS (status quo): the tower gives the earliest safe runway slot (wake, capacity, fuel), the aircraft heads for its original gate; if the gate is busy it waits on the taxiway until the gate frees, and that wait counts as delay. This models desks that only see their own data and coordinate by phone.\n- Concord: the plan the chief settles on after the three agents negotiate.\n- Omniscient optimiser: sees everything and picks the legal candidate with the lowest soft cost. Theoretical upper bound.\n")
+    md.append("\n## Limits\n\n- Gates, fuel, crew, connecting passengers and wake category are simulated from the judge's conditions (`src/scenario.py`). Flight, delay, cause and arrival queue are real.\n- One aircraft at a time, no knock-on effects.\n- Rules are simplified: time gaps instead of nautical miles for wake, observed arrivals x a weather factor for capacity, fuel as minutes of endurance. See the simplification column in `data/rules.json`.\n- The evaluation runs in our own simulator and the baselines use the same rulebook. Numbers are relative comparisons, not operational data.\n- flights.csv is a 358,774-row subset, so the arrival queue is about 6%% of real traffic density.\n")
     open("docs/EVAL.md", "w").write("".join(md))
     print("wrote docs/EVAL.md")

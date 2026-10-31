@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// 之後後端 FastAPI 跑在 8000，前端 /api 直接轉過去
+// the FastAPI backend runs on 8000, /api is proxied there
 export default defineConfig({
   plugins: [react()],
   server: {
