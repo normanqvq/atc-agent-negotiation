@@ -1,0 +1,37 @@
+{
+  "_note": "Flights the judge can pick from. scripts/build_pool.py overwrites this with real rows from flights.csv. These 3 are placeholders in the same shape.",
+  "airport": "ATL",
+  "flights": [
+    {
+      "pool_index": 1, "row_id": 48213, "date": "2015-01-15", "flight": "DL1234", "airline": "Delta Air Lines Inc.",
+      "origin": "MSP", "destination": "ATL", "scheduled_arrival": "17:05", "delay_min": 45,
+      "delay_breakdown": { "weather": 45, "late_aircraft": 0, "nas": 0, "carrier": 0, "security": 0 },
+      "arrival_queue": [
+        { "flight": "DL0421", "sched_arrival": "17:28", "wake_category": "heavy" },
+        { "flight": "WN1187", "sched_arrival": "17:35", "wake_category": "medium" },
+        { "flight": "DL0888", "sched_arrival": "17:44", "wake_category": "medium" },
+        { "flight": "AA2290", "sched_arrival": "17:58", "wake_category": "medium" }
+      ]
+    },
+    {
+      "pool_index": 2, "row_id": 51077, "date": "2015-02-03", "flight": "WN0442", "airline": "Southwest Airlines Co.",
+      "origin": "MDW", "destination": "ATL", "scheduled_arrival": "09:40", "delay_min": 62,
+      "delay_breakdown": { "weather": 0, "late_aircraft": 38, "nas": 24, "carrier": 0, "security": 0 },
+      "arrival_queue": [
+        { "flight": "DL0102", "sched_arrival": "10:12", "wake_category": "heavy" },
+        { "flight": "DL1890", "sched_arrival": "10:20", "wake_category": "medium" },
+        { "flight": "EV4511", "sched_arrival": "10:31", "wake_category": "medium" }
+      ]
+    },
+    {
+      "pool_index": 3, "row_id": 60991, "date": "2015-06-21", "flight": "AA1009", "airline": "American Airlines Inc.",
+      "origin": "DFW", "destination": "ATL", "scheduled_arrival": "20:15", "delay_min": 28,
+      "delay_breakdown": { "weather": 28, "late_aircraft": 0, "nas": 0, "carrier": 0, "security": 0 },
+      "arrival_queue": [
+        { "flight": "DL2210", "sched_arrival": "20:30", "wake_category": "medium" },
+        { "flight": "DL0077", "sched_arrival": "20:41", "wake_category": "heavy" },
+        { "flight": "NK0310", "sched_arrival": "20:55", "wake_category": "medium" }
+      ]
+    }
+  ]
+}
