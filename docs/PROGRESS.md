@@ -2,7 +2,7 @@
 
 > Updated with every commit. If Norman's Claude runs out of usage, a teammate continues from "Next". Read the root `CLAUDE.md` first.
 
-Last update: 31 Oct 13:20 · branch `main` · Norman + Claude
+Last update: 31 Oct 13:32 · branch `main` · Norman + Claude
 
 ## How to run
 
@@ -36,6 +36,12 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 5. [ ] Fill team names on the intro screen
 6. [ ] Rehearse twice under 3 minutes with the backend off once (replay mode)
 7. [ ] 15:30 first submission
+
+## Notes for issue #4 (from the 13:30 cross check)
+
+- `world["arrival_queue"]` does not contain the subject flight. The UI highlights a flight with `is_subject: true` on the timeline; add the subject to `arrival_queue.flights` when assembling the log, but never to the world the rules read, or WAKE-01 / CAP-01 will count it as its own neighbour.
+- `requirements.txt` still only has pandas, python-dotenv, pytest. #3 adds `anthropic`, #4 adds `fastapi` and `uvicorn`.
+- A log assembled from scenario + candidates + rules matches every path in `data/sample_log.json` (97 paths, none missing).
 
 ## Blocked / questions
 
