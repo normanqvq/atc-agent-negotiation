@@ -86,9 +86,17 @@ export default function App() {
     setSigned({ state, stamp: new Date().toTimeString().slice(0, 5) })
   }
 
-  // → / PageDown next, ← / PageUp back (clickers send PageDown / PageUp)
+  // F = fullscreen on / off. Esc also leaves fullscreen (the browser does that).
+  // the stage re-fits by itself on the resize that follows
+  function toggleFullscreen() {
+    if (document.fullscreenElement) document.exitFullscreen()
+    else document.documentElement.requestFullscreen()
+  }
+
+  // → / PageDown next, ← / PageUp back (clickers send PageDown / PageUp), F fullscreen
   useEffect(() => {
     function onKey(e) {
+      if ((e.key === 'f' || e.key === 'F') && !e.metaKey && !e.ctrlKey && !e.altKey) { toggleFullscreen(); return }
       if (document.activeElement && document.activeElement.tagName === 'INPUT') return // flight list radios use arrows
       if (e.key === 'ArrowRight' || e.key === 'PageDown') next()
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') goTo(idx - 1)

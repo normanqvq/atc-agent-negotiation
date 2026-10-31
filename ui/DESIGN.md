@@ -24,7 +24,7 @@ The number of Live run screens is computed from the backend log: one Round scree
 ## Layout
 
 - Landscape 16:9 only, light theme only. Every screen sits on a fixed 1600x900 stage that `App.jsx` scales. No `vw`/`vh`, no media queries.
-- Keyboard: → / PageDown next, ← / PageUp previous (a presenter clicker works).
+- Keyboard: → / PageDown next, ← / PageUp previous (a presenter clicker works). F toggles fullscreen, Esc leaves it.
 - With the backend down the UI plays `data/sample_log.json`, so the demo still runs.
 
 ## Visual language
