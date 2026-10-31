@@ -1,110 +1,122 @@
 {
-  "_note": "Real ATL arrivals from flights.csv matching WEATHER_DELAY>15 or LATE_AIRCRAFT_DELAY>20, seed 42. wake_category is simulated from the tail number.",
+  "_note": "Real ATL arrivals from flights.csv matching WEATHER_DELAY>15 or LATE_AIRCRAFT_DELAY>20, seed 42, oversampled x12 and filtered to flights whose earliest slot is blocked under thunderstorm + single runway. wake_category is simulated from the tail number.",
   "airport": "ATL",
   "flights": [
     {
       "pool_index": 1,
-      "row_id": 24832,
-      "date": "2015-01-15",
-      "flight": "WN0234",
-      "airline": "Southwest Airlines Co.",
-      "tail_number": "N370SW",
-      "origin": "MKE",
+      "row_id": 157731,
+      "date": "2015-05-29",
+      "flight": "DL1810",
+      "airline": "Delta Air Lines Inc.",
+      "tail_number": "N969AT",
+      "origin": "DFW",
       "destination": "ATL",
-      "scheduled_arrival": "18:10",
-      "delay_min": 34,
+      "scheduled_arrival": "21:35",
+      "delay_min": 40,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 29,
-        "nas": 0,
-        "carrier": 5,
+        "late_aircraft": 27,
+        "nas": 13,
+        "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "DL1341",
-          "sched_arrival": "17:42",
+          "flight": "WN1814",
+          "sched_arrival": "21:25",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL1689",
-          "sched_arrival": "17:50",
+          "flight": "WN2940",
+          "sched_arrival": "21:35",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL0105",
-          "sched_arrival": "17:58",
+          "flight": "WN3663",
+          "sched_arrival": "21:35",
           "wake_category": "heavy",
           "real": true
         },
         {
-          "flight": "EV5496",
-          "sched_arrival": "18:19",
+          "flight": "F90422",
+          "sched_arrival": "22:11",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "WN3476",
-          "sched_arrival": "18:35",
+          "flight": "OO6288",
+          "sched_arrival": "22:23",
           "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "EV4939",
-          "sched_arrival": "18:59",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "OO4730",
-          "sched_arrival": "19:00",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1293",
-          "sched_arrival": "19:01",
-          "wake_category": "medium",
           "real": true
         }
       ]
     },
     {
       "pool_index": 2,
-      "row_id": 55374,
-      "date": "2015-02-20",
-      "flight": "DL1547",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N920DE",
-      "origin": "LGA",
+      "row_id": 174511,
+      "date": "2015-06-12",
+      "flight": "EV5183",
+      "airline": "Atlantic Southeast Airlines",
+      "tail_number": "N861AS",
+      "origin": "MGM",
       "destination": "ATL",
-      "scheduled_arrival": "21:49",
-      "delay_min": 24,
+      "scheduled_arrival": "17:19",
+      "delay_min": 37,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 24,
+        "late_aircraft": 37,
         "nas": 0,
         "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "WN4835",
-          "sched_arrival": "21:20",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "MQ3236",
-          "sched_arrival": "21:47",
+          "flight": "EV5248",
+          "sched_arrival": "16:49",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL1445",
-          "sched_arrival": "22:43",
+          "flight": "DL1839",
+          "sched_arrival": "16:56",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL0393",
+          "sched_arrival": "16:59",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2369",
+          "sched_arrival": "17:19",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV5007",
+          "sched_arrival": "17:47",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "AS0746",
+          "sched_arrival": "17:53",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN0267",
+          "sched_arrival": "18:05",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV4940",
+          "sched_arrival": "18:11",
           "wake_category": "medium",
           "real": true
         }
@@ -112,68 +124,68 @@
     },
     {
       "pool_index": 3,
-      "row_id": 61044,
-      "date": "2015-02-24",
-      "flight": "DL0826",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N904DL",
-      "origin": "CLT",
+      "row_id": 208239,
+      "date": "2015-07-02",
+      "flight": "EV5566",
+      "airline": "Atlantic Southeast Airlines",
+      "tail_number": "N842AS",
+      "origin": "CSG",
       "destination": "ATL",
-      "scheduled_arrival": "19:41",
-      "delay_min": 96,
+      "scheduled_arrival": "15:40",
+      "delay_min": 36,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 81,
+        "late_aircraft": 36,
         "nas": 0,
-        "carrier": 15,
+        "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "US2041",
-          "sched_arrival": "19:15",
+          "flight": "EV4887",
+          "sched_arrival": "15:11",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL2195",
-          "sched_arrival": "19:20",
+          "flight": "DL1389",
+          "sched_arrival": "15:34",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL0495",
+          "sched_arrival": "15:41",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL1417",
+          "sched_arrival": "15:51",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL2256",
-          "sched_arrival": "19:21",
+          "flight": "EV5102",
+          "sched_arrival": "16:03",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "OO5171",
-          "sched_arrival": "19:30",
+          "flight": "EV5584",
+          "sched_arrival": "16:13",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL2471",
-          "sched_arrival": "19:33",
+          "flight": "WN0170",
+          "sched_arrival": "16:25",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "EV5017",
-          "sched_arrival": "19:36",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2431",
-          "sched_arrival": "19:38",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV4897",
-          "sched_arrival": "19:39",
+          "flight": "OO5636",
+          "sched_arrival": "16:35",
           "wake_category": "medium",
           "real": true
         }
@@ -181,125 +193,119 @@
     },
     {
       "pool_index": 4,
-      "row_id": 79165,
-      "date": "2015-03-06",
-      "flight": "EV5102",
+      "row_id": 241928,
+      "date": "2015-07-28",
+      "flight": "EV5162",
       "airline": "Atlantic Southeast Airlines",
-      "tail_number": "N852AS",
-      "origin": "MGM",
+      "tail_number": "N851AS",
+      "origin": "FAY",
       "destination": "ATL",
-      "scheduled_arrival": "15:55",
-      "delay_min": 68,
+      "scheduled_arrival": "11:29",
+      "delay_min": 21,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 68,
+        "late_aircraft": 21,
         "nas": 0,
         "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "EV5111",
-          "sched_arrival": "15:30",
+          "flight": "DL1122",
+          "sched_arrival": "11:05",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "EV5165",
-          "sched_arrival": "15:31",
+          "flight": "DL1522",
+          "sched_arrival": "11:30",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL2325",
-          "sched_arrival": "15:33",
+          "flight": "DL2012",
+          "sched_arrival": "11:59",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "EV5425",
-          "sched_arrival": "15:33",
-          "wake_category": "medium",
+          "flight": "AA1933",
+          "sched_arrival": "12:02",
+          "wake_category": "heavy",
           "real": true
         },
         {
-          "flight": "DL0151",
-          "sched_arrival": "15:34",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1606",
-          "sched_arrival": "15:35",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5356",
-          "sched_arrival": "15:35",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5566",
-          "sched_arrival": "15:35",
-          "wake_category": "medium",
+          "flight": "EV5056",
+          "sched_arrival": "12:09",
+          "wake_category": "heavy",
           "real": true
         }
       ]
     },
     {
       "pool_index": 5,
-      "row_id": 79174,
-      "date": "2015-03-06",
-      "flight": "EV5136",
+      "row_id": 241926,
+      "date": "2015-07-28",
+      "flight": "EV5146",
       "airline": "Atlantic Southeast Airlines",
-      "tail_number": "N979EV",
-      "origin": "MYR",
+      "tail_number": "N723EV",
+      "origin": "HPN",
       "destination": "ATL",
-      "scheduled_arrival": "20:59",
-      "delay_min": 106,
+      "scheduled_arrival": "17:25",
+      "delay_min": 41,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 106,
+        "late_aircraft": 41,
         "nas": 0,
         "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "DL0433",
-          "sched_arrival": "20:31",
+          "flight": "EV4924",
+          "sched_arrival": "17:24",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "EV5089",
-          "sched_arrival": "20:40",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1884",
-          "sched_arrival": "21:05",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN4835",
-          "sched_arrival": "21:20",
+          "flight": "WN0853",
+          "sched_arrival": "17:35",
           "wake_category": "heavy",
           "real": true
         },
         {
-          "flight": "DL1512",
-          "sched_arrival": "21:42",
+          "flight": "EV5007",
+          "sched_arrival": "17:41",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "MQ3236",
-          "sched_arrival": "21:47",
+          "flight": "DL0798",
+          "sched_arrival": "18:09",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV4973",
+          "sched_arrival": "18:09",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV5474",
+          "sched_arrival": "18:19",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5330",
+          "sched_arrival": "18:22",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN0576",
+          "sched_arrival": "18:25",
           "wake_category": "medium",
           "real": true
         }
@@ -307,588 +313,6 @@
     },
     {
       "pool_index": 6,
-      "row_id": 96473,
-      "date": "2015-03-26",
-      "flight": "DL2628",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N607AT",
-      "origin": "ORD",
-      "destination": "ATL",
-      "scheduled_arrival": "11:56",
-      "delay_min": 85,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 84,
-        "nas": 0,
-        "carrier": 1,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "EV5020",
-          "sched_arrival": "12:24",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN0443",
-          "sched_arrival": "12:35",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1478",
-          "sched_arrival": "12:41",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5030",
-          "sched_arrival": "12:41",
-          "wake_category": "heavy",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 7,
-      "row_id": 110733,
-      "date": "2015-04-10",
-      "flight": "EV4948",
-      "airline": "Atlantic Southeast Airlines",
-      "tail_number": "N147PQ",
-      "origin": "HSV",
-      "destination": "ATL",
-      "scheduled_arrival": "11:01",
-      "delay_min": 75,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 28,
-        "nas": 0,
-        "carrier": 47,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "DL1051",
-          "sched_arrival": "11:16",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1334",
-          "sched_arrival": "11:19",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5244",
-          "sched_arrival": "11:21",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2441",
-          "sched_arrival": "11:30",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2380",
-          "sched_arrival": "11:37",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN0580",
-          "sched_arrival": "11:40",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL1521",
-          "sched_arrival": "11:57",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL2309",
-          "sched_arrival": "12:00",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 8,
-      "row_id": 135473,
-      "date": "2015-05-10",
-      "flight": "DL1710",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N955DL",
-      "origin": "DFW",
-      "destination": "ATL",
-      "scheduled_arrival": "15:25",
-      "delay_min": 117,
-      "delay_breakdown": {
-        "weather": 5,
-        "late_aircraft": 108,
-        "nas": 0,
-        "carrier": 4,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "DL2541",
-          "sched_arrival": "15:09",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN0505",
-          "sched_arrival": "15:25",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5229",
-          "sched_arrival": "15:29",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "F90604",
-          "sched_arrival": "15:30",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "F90607",
-          "sched_arrival": "15:35",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN0492",
-          "sched_arrival": "15:55",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL2110",
-          "sched_arrival": "16:23",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5075",
-          "sched_arrival": "16:23",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 9,
-      "row_id": 141833,
-      "date": "2015-05-16",
-      "flight": "DL1052",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N955DL",
-      "origin": "MKE",
-      "destination": "ATL",
-      "scheduled_arrival": "17:07",
-      "delay_min": 67,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 61,
-        "nas": 0,
-        "carrier": 6,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "EV4954",
-          "sched_arrival": "17:10",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5278",
-          "sched_arrival": "17:47",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5125",
-          "sched_arrival": "17:59",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 10,
-      "row_id": 144116,
-      "date": "2015-05-18",
-      "flight": "DL2101",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N688DL",
-      "origin": "BOS",
-      "destination": "ATL",
-      "scheduled_arrival": "18:47",
-      "delay_min": 44,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 36,
-        "nas": 0,
-        "carrier": 8,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "DL1159",
-          "sched_arrival": "18:19",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5474",
-          "sched_arrival": "18:19",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL1466",
-          "sched_arrival": "18:19",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2651",
-          "sched_arrival": "18:20",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5049",
-          "sched_arrival": "18:20",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL0404",
-          "sched_arrival": "18:20",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL0735",
-          "sched_arrival": "18:20",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5398",
-          "sched_arrival": "18:20",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 11,
-      "row_id": 173365,
-      "date": "2015-06-11",
-      "flight": "OO5566",
-      "airline": "Skywest Airlines Inc.",
-      "tail_number": "N125SY",
-      "origin": "ORD",
-      "destination": "ATL",
-      "scheduled_arrival": "20:45",
-      "delay_min": 92,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 27,
-        "nas": 0,
-        "carrier": 65,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "DL1774",
-          "sched_arrival": "20:20",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2081",
-          "sched_arrival": "20:25",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL2281",
-          "sched_arrival": "20:41",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5065",
-          "sched_arrival": "20:44",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5159",
-          "sched_arrival": "20:48",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "EV4953",
-          "sched_arrival": "20:58",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV4929",
-          "sched_arrival": "21:02",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5149",
-          "sched_arrival": "21:04",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 12,
-      "row_id": 185610,
-      "date": "2015-06-18",
-      "flight": "DL1116",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N995AT",
-      "origin": "MDW",
-      "destination": "ATL",
-      "scheduled_arrival": "18:47",
-      "delay_min": 48,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 29,
-        "nas": 15,
-        "carrier": 4,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "WN0576",
-          "sched_arrival": "18:25",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2172",
-          "sched_arrival": "18:27",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5262",
-          "sched_arrival": "18:29",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL1416",
-          "sched_arrival": "18:32",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1637",
-          "sched_arrival": "18:44",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL1224",
-          "sched_arrival": "18:59",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "WN0324",
-          "sched_arrival": "19:10",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL0950",
-          "sched_arrival": "19:23",
-          "wake_category": "heavy",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 13,
-      "row_id": 188118,
-      "date": "2015-06-19",
-      "flight": "DL1561",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N931DL",
-      "origin": "PHL",
-      "destination": "ATL",
-      "scheduled_arrival": "16:14",
-      "delay_min": 50,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 38,
-        "nas": 0,
-        "carrier": 12,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "DL2597",
-          "sched_arrival": "15:50",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL0151",
-          "sched_arrival": "15:55",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2110",
-          "sched_arrival": "16:31",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5248",
-          "sched_arrival": "16:49",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 14,
-      "row_id": 192596,
-      "date": "2015-06-22",
-      "flight": "EV5206",
-      "airline": "Atlantic Southeast Airlines",
-      "tail_number": "N146PQ",
-      "origin": "HOU",
-      "destination": "ATL",
-      "scheduled_arrival": "15:03",
-      "delay_min": 59,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 59,
-        "nas": 0,
-        "carrier": 0,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "DL1233",
-          "sched_arrival": "14:37",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5133",
-          "sched_arrival": "14:42",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN0169",
-          "sched_arrival": "14:45",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV4965",
-          "sched_arrival": "14:46",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL0812",
-          "sched_arrival": "15:30",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "EV5425",
-          "sched_arrival": "15:32",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1830",
-          "sched_arrival": "15:34",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV4886",
-          "sched_arrival": "15:35",
-          "wake_category": "medium",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 15,
-      "row_id": 239995,
-      "date": "2015-07-26",
-      "flight": "DL1068",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N550NW",
-      "origin": "RSW",
-      "destination": "ATL",
-      "scheduled_arrival": "14:13",
-      "delay_min": 66,
-      "delay_breakdown": {
-        "weather": 0,
-        "late_aircraft": 65,
-        "nas": 0,
-        "carrier": 1,
-        "security": 0
-      },
-      "arrival_queue": [
-        {
-          "flight": "EV4961",
-          "sched_arrival": "14:08",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5082",
-          "sched_arrival": "14:14",
-          "wake_category": "heavy",
-          "real": true
-        },
-        {
-          "flight": "DL2463",
-          "sched_arrival": "14:15",
-          "wake_category": "heavy",
-          "real": true
-        }
-      ]
-    },
-    {
-      "pool_index": 16,
       "row_id": 246028,
       "date": "2015-07-31",
       "flight": "DL1126",
@@ -957,39 +381,639 @@
       ]
     },
     {
-      "pool_index": 17,
-      "row_id": 268620,
-      "date": "2015-08-18",
-      "flight": "EV5248",
-      "airline": "Atlantic Southeast Airlines",
-      "tail_number": "N979EV",
-      "origin": "SGF",
+      "pool_index": 7,
+      "row_id": 273538,
+      "date": "2015-08-21",
+      "flight": "DL1171",
+      "airline": "Delta Air Lines Inc.",
+      "tail_number": "N911DE",
+      "origin": "DFW",
       "destination": "ATL",
-      "scheduled_arrival": "16:49",
-      "delay_min": 87,
+      "scheduled_arrival": "18:01",
+      "delay_min": 27,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 75,
-        "nas": 6,
-        "carrier": 6,
+        "late_aircraft": 27,
+        "nas": 0,
+        "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "DL2573",
-          "sched_arrival": "16:39",
+          "flight": "EV5527",
+          "sched_arrival": "17:43",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN0246",
+          "sched_arrival": "17:45",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV5262",
+          "sched_arrival": "17:54",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1159",
+          "sched_arrival": "18:11",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5203",
+          "sched_arrival": "18:21",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2642",
+          "sched_arrival": "18:23",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "OO4502",
+          "sched_arrival": "18:39",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "MQ3272",
+          "sched_arrival": "18:45",
+          "wake_category": "medium",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 8,
+      "row_id": 11267,
+      "date": "2015-01-05",
+      "flight": "WN4195",
+      "airline": "Southwest Airlines Co.",
+      "tail_number": "N487WN",
+      "origin": "MSP",
+      "destination": "ATL",
+      "scheduled_arrival": "14:55",
+      "delay_min": 36,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 27,
+        "nas": 0,
+        "carrier": 9,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "WN4561",
+          "sched_arrival": "14:40",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1095",
+          "sched_arrival": "14:42",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV5425",
+          "sched_arrival": "15:26",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1771",
+          "sched_arrival": "15:29",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5467",
+          "sched_arrival": "15:35",
+          "wake_category": "heavy",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 9,
+      "row_id": 13589,
+      "date": "2015-01-06",
+      "flight": "WN3917",
+      "airline": "Southwest Airlines Co.",
+      "tail_number": "N426WN",
+      "origin": "RDU",
+      "destination": "ATL",
+      "scheduled_arrival": "15:00",
+      "delay_min": 45,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 35,
+        "nas": 0,
+        "carrier": 10,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "WN0556",
+          "sched_arrival": "14:40",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "WN1343",
+          "sched_arrival": "15:00",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1639",
+          "sched_arrival": "15:02",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1648",
+          "sched_arrival": "15:05",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV4999",
+          "sched_arrival": "15:29",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5467",
+          "sched_arrival": "15:35",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2147",
+          "sched_arrival": "15:48",
+          "wake_category": "heavy",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 10,
+      "row_id": 26524,
+      "date": "2015-01-19",
+      "flight": "DL1190",
+      "airline": "Delta Air Lines Inc.",
+      "tail_number": "N944DL",
+      "origin": "CAK",
+      "destination": "ATL",
+      "scheduled_arrival": "13:09",
+      "delay_min": 54,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 54,
+        "nas": 0,
+        "carrier": 0,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "DL1863",
+          "sched_arrival": "12:56",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1311",
+          "sched_arrival": "13:27",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5063",
+          "sched_arrival": "13:49",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL1589",
+          "sched_arrival": "13:50",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV4918",
+          "sched_arrival": "14:09",
+          "wake_category": "medium",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 11,
+      "row_id": 33573,
+      "date": "2015-01-30",
+      "flight": "WN0756",
+      "airline": "Southwest Airlines Co.",
+      "tail_number": "N737JW",
+      "origin": "AUS",
+      "destination": "ATL",
+      "scheduled_arrival": "19:50",
+      "delay_min": 57,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 29,
+        "nas": 28,
+        "carrier": 0,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "WN3214",
+          "sched_arrival": "19:35",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5269",
+          "sched_arrival": "19:43",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2603",
+          "sched_arrival": "19:55",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2088",
+          "sched_arrival": "20:09",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "AA0349",
+          "sched_arrival": "20:24",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "F91300",
+          "sched_arrival": "20:45",
+          "wake_category": "medium",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 12,
+      "row_id": 45372,
+      "date": "2015-02-12",
+      "flight": "US2041",
+      "airline": "US Airways Inc.",
+      "tail_number": "N704US",
+      "origin": "CLT",
+      "destination": "ATL",
+      "scheduled_arrival": "19:15",
+      "delay_min": 43,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 31,
+        "nas": 4,
+        "carrier": 8,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "DL1222",
+          "sched_arrival": "19:13",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5192",
+          "sched_arrival": "19:39",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL2448",
+          "sched_arrival": "19:42",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2287",
+          "sched_arrival": "19:49",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV4953",
+          "sched_arrival": "19:49",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5141",
+          "sched_arrival": "19:50",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN0756",
+          "sched_arrival": "19:50",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN3493",
+          "sched_arrival": "19:50",
+          "wake_category": "medium",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 13,
+      "row_id": 95042,
+      "date": "2015-03-24",
+      "flight": "WN0764",
+      "airline": "Southwest Airlines Co.",
+      "tail_number": "N773SA",
+      "origin": "MSP",
+      "destination": "ATL",
+      "scheduled_arrival": "19:40",
+      "delay_min": 25,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 21,
+        "nas": 0,
+        "carrier": 4,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "EV4881",
+          "sched_arrival": "19:19",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL1510",
+          "sched_arrival": "19:20",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL0964",
+          "sched_arrival": "19:37",
           "wake_category": "medium",
           "real": true
         },
         {
           "flight": "EV5151",
-          "sched_arrival": "16:41",
+          "sched_arrival": "19:42",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL0881",
-          "sched_arrival": "17:32",
+          "flight": "EV5440",
+          "sched_arrival": "19:52",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5192",
+          "sched_arrival": "19:56",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5186",
+          "sched_arrival": "20:00",
+          "wake_category": "medium",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 14,
+      "row_id": 123440,
+      "date": "2015-04-24",
+      "flight": "DL0774",
+      "airline": "Delta Air Lines Inc.",
+      "tail_number": "N554NW",
+      "origin": "SAT",
+      "destination": "ATL",
+      "scheduled_arrival": "09:14",
+      "delay_min": 28,
+      "delay_breakdown": {
+        "weather": 28,
+        "late_aircraft": 0,
+        "nas": 0,
+        "carrier": 0,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "DL2535",
+          "sched_arrival": "08:47",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN4659",
+          "sched_arrival": "09:45",
+          "wake_category": "heavy",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 15,
+      "row_id": 126509,
+      "date": "2015-04-27",
+      "flight": "EV5526",
+      "airline": "Atlantic Southeast Airlines",
+      "tail_number": "N873AS",
+      "origin": "MLU",
+      "destination": "ATL",
+      "scheduled_arrival": "19:44",
+      "delay_min": 51,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 51,
+        "nas": 0,
+        "carrier": 0,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "WN0354",
+          "sched_arrival": "19:35",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL1307",
+          "sched_arrival": "19:39",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5012",
+          "sched_arrival": "19:44",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5440",
+          "sched_arrival": "19:53",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL2064",
+          "sched_arrival": "19:55",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5342",
+          "sched_arrival": "20:00",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "NK0567",
+          "sched_arrival": "20:30",
+          "wake_category": "medium",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 16,
+      "row_id": 129183,
+      "date": "2015-05-03",
+      "flight": "AA1387",
+      "airline": "American Airlines Inc.",
+      "tail_number": "N3BWAA",
+      "origin": "DFW",
+      "destination": "ATL",
+      "scheduled_arrival": "20:17",
+      "delay_min": 45,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 37,
+        "nas": 0,
+        "carrier": 8,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "EV5526",
+          "sched_arrival": "19:49",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV5342",
+          "sched_arrival": "19:59",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL2081",
+          "sched_arrival": "20:28",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "NK0567",
+          "sched_arrival": "20:30",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV4993",
+          "sched_arrival": "21:05",
+          "wake_category": "heavy",
+          "real": true
+        }
+      ]
+    },
+    {
+      "pool_index": 17,
+      "row_id": 162715,
+      "date": "2015-06-02",
+      "flight": "DL0347",
+      "airline": "Delta Air Lines Inc.",
+      "tail_number": "N928DL",
+      "origin": "LGA",
+      "destination": "ATL",
+      "scheduled_arrival": "15:37",
+      "delay_min": 36,
+      "delay_breakdown": {
+        "weather": 0,
+        "late_aircraft": 32,
+        "nas": 0,
+        "carrier": 4,
+        "security": 0
+      },
+      "arrival_queue": [
+        {
+          "flight": "DL1107",
+          "sched_arrival": "15:08",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1648",
+          "sched_arrival": "15:23",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "MQ3668",
+          "sched_arrival": "15:29",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1423",
+          "sched_arrival": "15:31",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN3135",
+          "sched_arrival": "15:50",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN0295",
+          "sched_arrival": "16:00",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1561",
+          "sched_arrival": "16:15",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL0350",
+          "sched_arrival": "16:32",
           "wake_category": "medium",
           "real": true
         }
@@ -997,56 +1021,62 @@
     },
     {
       "pool_index": 18,
-      "row_id": 280886,
-      "date": "2015-08-31",
-      "flight": "EV5192",
-      "airline": "Atlantic Southeast Airlines",
-      "tail_number": "N755EV",
-      "origin": "MLI",
+      "row_id": 197671,
+      "date": "2015-06-25",
+      "flight": "OO4772",
+      "airline": "Skywest Airlines Inc.",
+      "tail_number": "N448SW",
+      "origin": "XNA",
       "destination": "ATL",
-      "scheduled_arrival": "19:49",
-      "delay_min": 85,
+      "scheduled_arrival": "13:47",
+      "delay_min": 54,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 67,
-        "nas": 15,
-        "carrier": 3,
+        "late_aircraft": 54,
+        "nas": 0,
+        "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "DL1750",
-          "sched_arrival": "19:39",
+          "flight": "EV4961",
+          "sched_arrival": "14:08",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "NK0942",
-          "sched_arrival": "20:08",
+          "flight": "EV5597",
+          "sched_arrival": "14:09",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "WN3083",
-          "sched_arrival": "20:15",
+          "flight": "DL1463",
+          "sched_arrival": "14:12",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL0701",
-          "sched_arrival": "20:16",
+          "flight": "EV5198",
+          "sched_arrival": "14:15",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL2586",
-          "sched_arrival": "20:17",
-          "wake_category": "heavy",
+          "flight": "EV5238",
+          "sched_arrival": "14:15",
+          "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "EV5602",
-          "sched_arrival": "20:34",
+          "flight": "DL2125",
+          "sched_arrival": "14:17",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "EV4965",
+          "sched_arrival": "14:46",
           "wake_category": "medium",
           "real": true
         }
@@ -1054,101 +1084,137 @@
     },
     {
       "pool_index": 19,
-      "row_id": 282711,
-      "date": "2015-09-03",
-      "flight": "DL2586",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N670DN",
-      "origin": "MCO",
+      "row_id": 215394,
+      "date": "2015-07-08",
+      "flight": "NK0942",
+      "airline": "Spirit Air Lines",
+      "tail_number": "N515NK",
+      "origin": "TPA",
       "destination": "ATL",
-      "scheduled_arrival": "20:17",
-      "delay_min": 53,
+      "scheduled_arrival": "20:08",
+      "delay_min": 39,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 33,
-        "nas": 20,
-        "carrier": 0,
+        "late_aircraft": 35,
+        "nas": 1,
+        "carrier": 3,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "EV5192",
-          "sched_arrival": "19:47",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL1277",
-          "sched_arrival": "19:48",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL0630",
+          "flight": "WN1988",
           "sched_arrival": "19:50",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "DL1813",
+          "flight": "DL0221",
           "sched_arrival": "19:51",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "EV4912",
+          "flight": "DL0826",
           "sched_arrival": "19:54",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "WN0818",
-          "sched_arrival": "19:55",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "EV5602",
-          "sched_arrival": "19:55",
-          "wake_category": "medium",
-          "real": true
-        },
-        {
-          "flight": "DL2596",
-          "sched_arrival": "19:55",
           "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "WN0449",
+          "sched_arrival": "20:10",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN3412",
+          "sched_arrival": "20:15",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL0725",
+          "sched_arrival": "20:21",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "WN2861",
+          "sched_arrival": "20:25",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "WN0415",
+          "sched_arrival": "20:45",
+          "wake_category": "medium",
           "real": true
         }
       ]
     },
     {
       "pool_index": 20,
-      "row_id": 321914,
-      "date": "2015-11-30",
-      "flight": "DL1601",
-      "airline": "Delta Air Lines Inc.",
-      "tail_number": "N129DL",
-      "origin": "BOS",
+      "row_id": 221148,
+      "date": "2015-07-13",
+      "flight": "EV5597",
+      "airline": "Atlantic Southeast Airlines",
+      "tail_number": "N147PQ",
+      "origin": "LFT",
       "destination": "ATL",
-      "scheduled_arrival": "11:29",
-      "delay_min": 64,
+      "scheduled_arrival": "14:12",
+      "delay_min": 26,
       "delay_breakdown": {
         "weather": 0,
-        "late_aircraft": 61,
+        "late_aircraft": 26,
         "nas": 0,
-        "carrier": 3,
+        "carrier": 0,
         "security": 0
       },
       "arrival_queue": [
         {
-          "flight": "DL2351",
-          "sched_arrival": "11:10",
+          "flight": "DL2228",
+          "sched_arrival": "14:03",
           "wake_category": "medium",
           "real": true
         },
         {
-          "flight": "AA1427",
-          "sched_arrival": "12:14",
+          "flight": "EV5608",
+          "sched_arrival": "14:03",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV4999",
+          "sched_arrival": "14:05",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "EV4874",
+          "sched_arrival": "14:09",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1720",
+          "sched_arrival": "14:10",
+          "wake_category": "heavy",
+          "real": true
+        },
+        {
+          "flight": "DL1725",
+          "sched_arrival": "14:13",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL0738",
+          "sched_arrival": "14:15",
+          "wake_category": "medium",
+          "real": true
+        },
+        {
+          "flight": "DL1342",
+          "sched_arrival": "14:35",
           "wake_category": "medium",
           "real": true
         }

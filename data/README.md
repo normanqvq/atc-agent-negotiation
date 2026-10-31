@@ -37,4 +37,4 @@ The file downloaded on hackathon day is a 358,774-row subset (38 MB), not the fu
 in it, so the same-day arrival queue around a flight is sparser than reality (about 6%
 of real traffic). Say this in the demo if asked.
 
-`scripts/build_pool.py ../flights.csv` builds `data/pool.json` from it.
+`scripts/build_pool.py ../flights.csv` builds `data/pool.json` from it: it samples 240 matching disruptions and keeps the 20 whose earliest candidate slot is blocked under thunderstorm + single runway while a legal option still exists, with the flights that also have zero legal candidates under the worst conditions listed first. So every flight the judge can pick shows the rulebook at work.
