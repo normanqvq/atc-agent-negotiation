@@ -9,13 +9,7 @@ from src.candidates import build_candidates
 from src.rules import check_all, first_block
 from src.chief import rule_on_round, final_pick
 
-# Temporary integration path until issue #3 lands. Never mask errors in its imports.
-try:
-    from src.agents import AGENTS, ask_agents
-except ModuleNotFoundError as exc:
-    if exc.name != "src.agents":
-        raise
-    from src.integration_agents import AGENTS, ask_agents
+from src.agents import AGENTS, ask_agents
 
 MAX_ROUNDS = 3
 ROOT = Path(__file__).resolve().parents[1]
