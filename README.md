@@ -21,40 +21,82 @@ fuel and missed connections.
 **User:** an airline duty manager / tower supervisor handling one delayed
 arrival. **Status quo:** three phone calls and a guess.
 
-## What we built
+## How the agents work together
+
+ATC is the chief. Pilot and Ground advise; ATC decides. But nobody, not even
+ATC, can pick an option that breaks a hard safety constraint, because those
+options are removed by plain rules before any agent sees them.
 
 ```
 disruption (one row from the 2015 US DOT flight delay data)
         |
         v
-  +-----------+     structured     +-------------+     structured     +--------------+
-  | ATC agent | -----messages----> | Pilot agent | -----messages----> | Ground agent |
-  +-----------+                    +-------------+                    +--------------+
-        |                                |                                   |
-        +-------------- every proposal goes through constraints.py ----------+
-                                         |
-                                         v
-                       consensus in <= 3 turns, or fallback.py
-                                         |
-                                         v
-                        logs/consensus_<flight>.json (traceable log)
+[rules] build the legal option set: runway slots x free gates
+        drop anything that breaks a hard constraint
+        (fuel minimum, wake separation, gate already occupied)
+        |
+        v
+turn 1
+  ATC     picks a proposal from the legal set
+  Pilot   accept / counter, with reason
+  Ground  accept / counter, with reason
+  ATC     rules on the counters: keep own proposal, or adopt one
+        |
+        v
+both accept -> consensus, done
+otherwise   -> ATC's ruling becomes the turn 2 proposal
+        |
+        v
+after turn 3 with no consensus -> ATC picks from the legal set, no more asking
+        |
+        v
+final plan + full negotiation log + "pending human controller confirmation"
 ```
 
-| Agent | Cares about |
-|---|---|
-| ATC | runway wake separation, taxiway blockage, sector throughput |
-| Pilot | fuel reserve, flight safety, turbulence, passenger connections |
-| Ground | gate utilisation, ground-crew overtime, turnaround delay |
+Turn cap is fixed at 3. No open-ended agent chatter.
+
+| Agent | Role | Hard constraints (veto, enforced by rules) | Soft goals (negotiated) |
+|---|---|---|---|
+| ATC | chief, decides | wake separation, runway closure, taxiway blockage | sector throughput |
+| Pilot | advises | fuel below minimum reserve, flight safety | passenger connections, less turbulence |
+| Ground | advises | gate already occupied at that time | keep original gate, avoid crew overtime, short turnaround |
+
+**Two layers of priority**
+
+1. Hard constraints have no priority. Each one is a veto. They live in
+   `constraints.py` as pure functions and never go through an LLM.
+2. Soft goals are where the agents actually negotiate. When ATC rules on
+   counters it follows a fixed order: does the counter hurt runway
+   throughput? If not, Pilot's counter beats Ground's (passengers and fuel
+   margin over gate convenience).
+
+**Every message has the same shape**
+
+```json
+{
+  "agent": "PILOT",
+  "turn": 1,
+  "action": "counter",
+  "proposal": {"new_arrival_time": "17:48", "gate": "B14", "route": "direct"},
+  "reason": "17:55 misses the 18:30 connection for 32 passengers",
+  "checks_passed": ["fuel_reserve", "wake_separation", "gate_free"],
+  "confidence": 0.82
+}
+```
+
+Actions are only `propose`, `accept`, `counter`, `reject`. No free text
+between agents.
 
 **LLM / non-LLM split**
 
-- Rules (`src/constraints.py`): every safety and operational check. Fuel
-  minimum, wake separation, gate availability, crew overtime. No AI here.
-- Fallback (`src/fallback.py`): if no consensus after 3 turns, pick the
-  earliest slot that passes every hard constraint. No AI here either.
-- Agents (`src/agents/`): decide between a small set of candidate proposals.
-  Rule-based by default; can plug in an LLM to generate candidates and a
-  judgment model (Jev) to pick between them with a confidence score.
+- Rules: every safety and operational check, and building the legal option
+  set. No AI.
+- Agents: choose between a small set of legal options. Rule-based by default.
+  Can plug in an LLM to write the `reason` line and a judgment model (Jev)
+  to pick between options with a confidence score. Low confidence falls back
+  to the rule-based choice.
+- Human in the loop: the final plan is a recommendation. The log shows what
+  Pilot and Ground objected to, so a human controller can overrule it.
 
 ## Status
 
