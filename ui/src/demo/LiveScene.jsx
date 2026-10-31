@@ -208,7 +208,13 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
           <div className="timer">
             <small>{running ? 'Elapsed' : 'Negotiated in'}</small>
             <b className="mono">{(ms / 1000).toFixed(ms < 1 ? 6 : ms < 100 ? 3 : 1)}<span>s</span></b>
-            <p>{aiEnabled ? '3 Haiku agents, called in parallel each round' : 'Rule-based fallback · AI disabled'}{log?.meta ? ` · ${log.meta.tokens} tokens` : ''}</p>
+            <p>
+              {noSafePlan
+                ? 'No desk called · the rulebook left no legal candidate'
+                : aiEnabled ? '3 Haiku agents, called in parallel each round' : 'Rule-based fallback · AI disabled'}
+              {log?.meta && !noSafePlan ? ` · ${log.meta.tokens} tokens` : ''}
+            </p>
+            {log?.meta?.source === 'sample' && <span className="stamp-sm">Replay · backend offline · sample flight</span>}
           </div>
           <div className="rounds">
             <small>{noSafePlan ? 'No legal candidates · 0 rounds' : `Round ${round || 1} of max 3`}</small>
