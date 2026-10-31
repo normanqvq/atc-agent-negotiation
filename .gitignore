@@ -19,3 +19,6 @@ logs/*.jsonl
 .DS_Store
 .vscode/
 .idea/
+ui/dist/
+ui/node_modules/
+.venv/

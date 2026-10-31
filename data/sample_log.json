@@ -1,0 +1,321 @@
+{
+  "_note": "Contract between UI and backend. POST /api/run returns this shape. Values are examples.",
+  "environment": {
+    "_note": "Environment dimensions chosen by the judge on screen",
+    "weather": {
+      "value": "thunderstorm",
+      "label": "Thunderstorm",
+      "options": [
+        "clear",
+        "fog",
+        "thunderstorm"
+      ]
+    },
+    "runway": {
+      "value": "single",
+      "label": "Single runway",
+      "options": [
+        "dual",
+        "single",
+        "one_closed"
+      ]
+    },
+    "aircraft_status": {
+      "value": "normal",
+      "label": "Normal",
+      "options": [
+        "normal",
+        "low_fuel",
+        "medical"
+      ]
+    },
+    "terminal": {
+      "value": "tight",
+      "label": "Gates tight",
+      "options": [
+        "normal",
+        "tight",
+        "zone_closed"
+      ]
+    },
+    "ground_crew": {
+      "value": "shift_ending",
+      "label": "Shift ending",
+      "options": [
+        "normal",
+        "shift_ending"
+      ]
+    },
+    "passengers": {
+      "value": "many_connecting",
+      "label": "Many connecting",
+      "options": [
+        "few",
+        "many_connecting"
+      ]
+    }
+  },
+  "scenario": {
+    "_note": "One real row from flights.csv",
+    "pool_index": 7,
+    "row_id": 48213,
+    "date": "2015-01-15",
+    "flight": "DL1234",
+    "airline": "Delta Air Lines Inc.",
+    "origin": "MSP",
+    "destination": "ATL",
+    "scheduled_arrival": "17:05",
+    "delay_min": 45,
+    "delay_breakdown": {
+      "weather": 45,
+      "late_aircraft": 0,
+      "nas": 0,
+      "carrier": 0,
+      "security": 0
+    },
+    "real_fields": [
+      "flight",
+      "airline",
+      "origin",
+      "destination",
+      "scheduled_arrival",
+      "delay_min",
+      "delay_breakdown",
+      "arrival_queue"
+    ],
+    "simulated_fields": [
+      "gate",
+      "fuel",
+      "crew",
+      "connections",
+      "wake_category"
+    ]
+  },
+  "arrival_queue": {
+    "_note": "Real same-day arrivals at the airport within one hour; wake_category is simulated",
+    "flights": [
+      {
+        "flight": "DL0421",
+        "sched_arrival": "17:28",
+        "wake_category": "heavy",
+        "real": true
+      },
+      {
+        "flight": "WN1187",
+        "sched_arrival": "17:35",
+        "wake_category": "medium",
+        "real": true
+      },
+      {
+        "flight": "DL0888",
+        "sched_arrival": "17:44",
+        "wake_category": "medium",
+        "real": true
+      },
+      {
+        "flight": "AA2290",
+        "sched_arrival": "17:58",
+        "wake_category": "medium",
+        "real": true
+      },
+      {
+        "flight": "DL1234",
+        "sched_arrival": "17:05",
+        "wake_category": "medium",
+        "real": true,
+        "is_subject": true
+      }
+    ]
+  },
+  "agents": {
+    "ATC": {
+      "label": "Tower · ATC",
+      "sees": "arrival slot table, wake category of neighbours, weather-reduced acceptance rate"
+    },
+    "PILOT": {
+      "label": "Cockpit · Pilot",
+      "sees": "fuel endurance, crew duty time left, connecting passengers"
+    },
+    "GROUND": {
+      "label": "Ramp · Ground",
+      "sees": "gate occupancy, ramp crew shift, this aircraft's next leg"
+    }
+  },
+  "candidates": [
+    {
+      "id": 1,
+      "arrival": "17:31",
+      "gate": "B12",
+      "mode": "hold",
+      "note": "earliest slot"
+    },
+    {
+      "id": 2,
+      "arrival": "17:40",
+      "gate": "B12",
+      "mode": "hold",
+      "note": ""
+    },
+    {
+      "id": 3,
+      "arrival": "17:52",
+      "gate": "B14",
+      "mode": "slow_down",
+      "note": "slow down 8 min instead of holding"
+    },
+    {
+      "id": 4,
+      "arrival": "18:03",
+      "gate": "B14",
+      "mode": "hold",
+      "note": ""
+    },
+    {
+      "id": 5,
+      "arrival": "18:12",
+      "gate": "C3",
+      "mode": "hold",
+      "note": "remote gate"
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "messages": [
+        {
+          "id": "m1",
+          "agent": "ATC",
+          "action": "rank",
+          "candidate": 3,
+          "text": "Ranking: #3 > #1 > #5. Thunderstorm halves the acceptance rate, slots before 17:40 are full"
+        },
+        {
+          "id": "m2",
+          "agent": "PILOT",
+          "action": "propose",
+          "candidate": 1,
+          "text": "Request 17:31 landing to protect 32 connecting passengers",
+          "blocked_by": "WAKE-01"
+        },
+        {
+          "id": "m3",
+          "agent": "GROUND",
+          "action": "counter",
+          "candidate": 3,
+          "text": "Gate B12 occupied until 18:10, propose B14 instead"
+        },
+        {
+          "id": "m4",
+          "agent": "CHIEF",
+          "action": "propose",
+          "candidate": 3,
+          "text": "#1 blocked by WAKE-01. Compromise: #3. Please confirm"
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "messages": [
+        {
+          "id": "m5",
+          "agent": "ATC",
+          "action": "accept",
+          "candidate": 3,
+          "text": "Accept #3"
+        },
+        {
+          "id": "m6",
+          "agent": "PILOT",
+          "action": "accept",
+          "candidate": 3,
+          "text": "Accept #3 on condition: slow down en route instead of holding"
+        },
+        {
+          "id": "m7",
+          "agent": "GROUND",
+          "action": "accept",
+          "candidate": 3,
+          "text": "Accept #3"
+        },
+        {
+          "id": "m8",
+          "agent": "CHIEF",
+          "action": "decide",
+          "candidate": 3,
+          "text": "All three accept. Consensus in round 2"
+        }
+      ]
+    }
+  ],
+  "rule_checks": [
+    {
+      "id": "WAKE-01",
+      "name": "Wake separation",
+      "status": "blocked",
+      "detail": "Pilot's 17:31: preceding DL0421 is Heavy, gap too short",
+      "source": "FAA JO 7110.65",
+      "message_id": "m2"
+    },
+    {
+      "id": "CAP-01",
+      "name": "Slot capacity",
+      "status": "pass",
+      "detail": "Rate halved by thunderstorm, 17:50 slot still has room",
+      "source": "Assumption: real count x 0.5"
+    },
+    {
+      "id": "FUEL-01",
+      "name": "Landing fuel",
+      "status": "pass",
+      "detail": "#3 lands above regulatory reserve",
+      "source": "14 CFR 121.639"
+    },
+    {
+      "id": "GATE-01",
+      "name": "Gate conflict",
+      "status": "pass",
+      "detail": "B14 free 17:58 to 19:00",
+      "source": "Logic rule"
+    }
+  ],
+  "decision": {
+    "candidate": 3,
+    "arrival": "17:52",
+    "gate": "B14",
+    "mode": "slow_down",
+    "summary": "Land 17:52 · Gate B14 · slow down 8 min instead of holding",
+    "agreed_in_round": 2,
+    "decided_by": "consensus",
+    "status": "pending_human",
+    "trace": [
+      {
+        "claim": "Land 17:52",
+        "links": [
+          "m1",
+          "CAP-01",
+          "WAKE-01"
+        ]
+      },
+      {
+        "claim": "Gate B14",
+        "links": [
+          "m3",
+          "GATE-01"
+        ]
+      },
+      {
+        "claim": "Slow down instead of holding",
+        "links": [
+          "m6",
+          "FUEL-01"
+        ]
+      }
+    ]
+  },
+  "meta": {
+    "elapsed_s": 6.4,
+    "tokens": 2130,
+    "ai_enabled": true,
+    "model": "claude-haiku-5-5"
+  }
+}

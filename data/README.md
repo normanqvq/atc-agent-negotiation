@@ -29,3 +29,12 @@ LATE_AIRCRAFT_DELAY > 20. `src/pick_event.py` does this.
 The dataset has no fuel, gate or crew data. `pick_event.py` adds these with
 fixed, clearly labelled assumptions (see the top of that file). Say this in
 the demo: synthetic fields are synthetic.
+
+## About the flights.csv we actually have
+
+The file downloaded on hackathon day is a 358,774-row subset (38 MB), not the full
+5.8M-row Kaggle file. It covers Jan to Dec 2015 except October. ATL has 18,504 arrivals
+in it, so the same-day arrival queue around a flight is sparser than reality (about 6%
+of real traffic). Say this in the demo if asked.
+
+`scripts/build_pool.py ../flights.csv` builds `data/pool.json` from it.

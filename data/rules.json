@@ -1,0 +1,50 @@
+{
+  "_note": "Rule table. UI rules page and backend constraints.py both read this. Check every citation against the source text before the demo.",
+  "rules": [
+    {
+      "id": "WAKE-01",
+      "name": "Wake turbulence separation",
+      "kind": "hard",
+      "rule": "Keep the minimum separation behind the preceding aircraft by wake category (Heavy / Medium / Light).",
+      "source": "FAA JO 7110.65, Chapter 5-5-4",
+      "assumed": false,
+      "simplification": "We use time gaps (3 min behind Heavy, 2 min behind Medium) instead of distance in NM."
+    },
+    {
+      "id": "CAP-01",
+      "name": "Arrival slot capacity",
+      "kind": "hard",
+      "rule": "Arrivals per 10-minute slot may not exceed the weather-reduced acceptance rate.",
+      "source": "Assumption: real same-day arrival count x weather factor (clear 1.0, fog 0.6, thunderstorm 0.5)",
+      "assumed": true,
+      "simplification": "Real AAR is set by the tower per runway configuration; we scale the observed count."
+    },
+    {
+      "id": "FUEL-01",
+      "name": "Landing fuel minimum",
+      "kind": "hard",
+      "rule": "Fuel on landing must stay above the regulatory reserve.",
+      "source": "14 CFR 121.639 (US domestic). ICAO Annex 6 applies internationally.",
+      "assumed": false,
+      "simplification": "Fuel is simulated as minutes of endurance; holding burns 1 min per min, slow-down burns 0.4."
+    },
+    {
+      "id": "GATE-01",
+      "name": "Gate conflict",
+      "kind": "hard",
+      "rule": "Two aircraft may not occupy the same gate at the same time, with a 10-minute buffer.",
+      "source": "Logic rule",
+      "assumed": true,
+      "simplification": "Gate occupancy table is simulated per scenario."
+    },
+    {
+      "id": "CONN-01",
+      "name": "Passenger connections",
+      "kind": "soft",
+      "rule": "Arriving after the connection cutoff costs one missed connection per affected passenger.",
+      "source": "Assumption",
+      "assumed": true,
+      "simplification": "Counted as cost, never a veto."
+    }
+  ]
+}

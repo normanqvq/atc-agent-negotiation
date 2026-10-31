@@ -1,0 +1,52 @@
+{
+  "_note": "Contract for the evidence page. The batch script writes this file. Values are examples.",
+  "n_events": 30,
+  "pool_note": "30 real disruptions never looked at during development, random seed 42",
+  "headline": {
+    "consensus_rate": 0.83,
+    "injected_violations_blocked": "24 / 24",
+    "delay_vs_fcfs_min": -11.2
+  },
+  "baselines": [
+    {
+      "name": "First come, first served",
+      "avg_delay_min": 52.1,
+      "missed_connections": 41,
+      "overtime_min": 180,
+      "measured": true
+    },
+    {
+      "name": "Concord (3-desk negotiation)",
+      "avg_delay_min": 40.9,
+      "missed_connections": 19,
+      "overtime_min": 95,
+      "measured": true
+    },
+    {
+      "name": "Omniscient optimiser (upper bound)",
+      "avg_delay_min": 37.5,
+      "missed_connections": 14,
+      "overtime_min": 80,
+      "measured": true
+    }
+  ],
+  "estimated": [
+    {
+      "name": "Extra fuel burned",
+      "value": "about 2,400 kg/hr x holding minutes",
+      "source": "public burn-rate estimate"
+    },
+    {
+      "name": "Time to decide",
+      "value": "6 to 12 s vs 10 to 15 min of phone calls",
+      "source": "estimate"
+    }
+  ],
+  "failure_case": {
+    "row_id": 51077,
+    "summary": "Fog + single runway + low fuel: zero legal candidates",
+    "what_happened": "The rule layer removed every slot. The system reported 'no safe plan, recommend diversion' and handed over to the human.",
+    "why": "With the rate halved, the earliest slot was 40 minutes out and fuel could not cover it.",
+    "fix": "Add diversion airports as candidates so the agents can negotiate a diversion instead of giving up."
+  }
+}
