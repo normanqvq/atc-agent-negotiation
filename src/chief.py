@@ -36,9 +36,13 @@ def rule_on_round(world, candidates, messages, round_no, current_proposal):
     if chosen is None:
         return {"agent": "CHIEF", "action": "decide", "candidate": None,
                 "text": "No safe plan. Hand to the duty manager."}
-    blocked = ["#%s blocked by %s" % (m["candidate"], m["blocked_by"])
-               for m in messages if m.get("blocked_by")]
-    reason = "; ".join(blocked) if blocked else "Desks disagree"
+    # one line per blocked candidate, listing the desks that asked for it
+    blocked = {}
+    for m in messages:
+        if m.get("blocked_by"):
+            blocked.setdefault((m["candidate"], m["blocked_by"]), []).append(m["agent"].capitalize())
+    parts = ["#%s (%s) blocked by %s" % (cand, "/".join(desks), rule) for (cand, rule), desks in blocked.items()]
+    reason = "; ".join(parts) if parts else "Desks disagree"
     return {"agent": "CHIEF", "action": "propose", "candidate": chosen["id"],
             "text": "%s. Compromise: #%d. Please confirm" % (reason, chosen["id"])}
 

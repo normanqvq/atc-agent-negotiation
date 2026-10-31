@@ -45,7 +45,9 @@ export default function App() {
 
   // the judge's choices, and the run they produced
   const [env, setEnv] = useState(defaultEnvironment())
-  const [poolIndex, setPoolIndex] = useState(poolFile.flights[0].pool_index)
+  // start on flight #16: the one that produces a blocked proposal under thunderstorm + single runway
+  const DEFAULT_FLIGHT = 16
+  const [poolIndex, setPoolIndex] = useState(poolFile.flights.some(f => f.pool_index === DEFAULT_FLIGHT) ? DEFAULT_FLIGHT : poolFile.flights[0].pool_index)
   const [log, setLog] = useState(null)
   const [ranEnv, setRanEnv] = useState(env)
   const [signed, setSigned] = useState({ state: 'pending', stamp: '' })

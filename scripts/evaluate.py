@@ -176,14 +176,26 @@ elif no_plan:
         "fix": "Add diversion airports and slots beyond ETA+30 as candidates so the desks can negotiate a diversion instead of giving up.",
     }
 else:
-    worst = max(scored, key=lambda r: r["concord"]["total"])
-    failure = {
-        "row_id": worst["row_id"],
-        "summary": "%s (%s): worst negotiated outcome, cost %.0f" % (worst["world"]["scenario"]["flight"], worst["label"], worst["concord"]["total"]),
-        "what_happened": "Concord landed %d min late with %d missed connections; the omniscient optimiser found cost %.0f." % (worst["concord"]["delay_min"], worst["concord"]["missed_connections"], worst["omni"]["total"]),
-        "why": "The desks converged on a legal but expensive slot because each only sees its own data.",
-        "fix": "Let the chief show the soft cost of every legal option to all desks in round 2.",
-    }
+    # prefer a run where the negotiation really did worse than the optimum; else the costliest case
+    gap = [r for r in scored if r["concord"]["total"] > r["omni"]["total"]]
+    if gap:
+        worst = max(gap, key=lambda r: r["concord"]["total"] - r["omni"]["total"])
+        failure = {
+            "row_id": worst["row_id"],
+            "summary": "%s (%s): negotiation ended %.0f cost points above the optimum" % (worst["world"]["scenario"]["flight"], worst["label"], worst["concord"]["total"] - worst["omni"]["total"]),
+            "what_happened": "Concord settled on candidate cost %.0f (%d min late, %d missed connections); the omniscient optimiser found cost %.0f." % (worst["concord"]["total"], worst["concord"]["delay_min"], worst["concord"]["missed_connections"], worst["omni"]["total"]),
+            "why": "Each desk only sees its own data, so the compromise the chief could build from their answers was not the cheapest legal option.",
+            "fix": "Let the chief show the soft cost of every legal option to all desks in round 2.",
+        }
+    else:
+        worst = max(scored, key=lambda r: r["concord"]["total"])
+        failure = {
+            "row_id": worst["row_id"],
+            "summary": "%s (%s): costliest outcome, %d min late, even the optimum could not do better" % (worst["world"]["scenario"]["flight"], worst["label"], worst["concord"]["delay_min"]),
+            "what_happened": "Concord and the omniscient optimiser picked the same plan (cost %.0f): %d min late, %d missed connections, %d min ramp overtime." % (worst["concord"]["total"], worst["concord"]["delay_min"], worst["concord"]["missed_connections"], worst["concord"]["overtime_min"]),
+            "why": "The conditions left only expensive legal slots. Negotiation cannot create runway capacity or gates that do not exist.",
+            "fix": "Add diversion airports and later slots as candidates, and let the Pilot desk weigh a diversion against a long hold.",
+        }
 
 out = {
     "_note": "Written by scripts/evaluate.py. %s" % ("STUB: Concord column is the omniscient pick, not a negotiation." if args.stub else "Real runs."),
@@ -232,6 +244,6 @@ if not args.stub:
     md.append("- Average per run: %.1f s, %.0f tokens\n" % (avg([r["elapsed_s"] for r in results]), avg([r["tokens"] for r in results])))
     md.append("\n## Failure case\n\n- row %s: %s\n- What happened: %s\n- Why: %s\n- Fix: %s\n" % (failure["row_id"], failure["summary"], failure["what_happened"], failure["why"], failure["fix"]))
     md.append("\n## How the baselines are computed\n\n- FCFS (status quo): the tower gives the earliest safe runway slot (wake, capacity, fuel), the aircraft heads for its original gate; if the gate is busy it waits on the taxiway until the gate frees, and that wait counts as delay. This models desks that only see their own data and coordinate by phone.\n- Concord: the plan the chief settles on after the three agents negotiate.\n- Omniscient optimiser: sees everything and picks the legal candidate with the lowest soft cost. Theoretical upper bound.\n")
-    md.append("\n## Limits\n\n- Gates, fuel, crew, connecting passengers and wake category are simulated from the judge's conditions (`src/scenario.py`). Flight, delay, cause and arrival queue are real.\n- One aircraft at a time, no knock-on effects.\n- Rules are simplified: time gaps instead of nautical miles for wake, observed arrivals x a weather factor for capacity, fuel as minutes of endurance. See the simplification column in `data/rules.json`.\n- The evaluation runs in our own simulator and the baselines use the same rulebook. Numbers are relative comparisons, not operational data.\n- flights.csv is a 358,774-row subset, so the arrival queue is about 6%% of real traffic density.\n")
+    md.append("\n## Limits\n\n- Gates, fuel, crew, connecting passengers and wake category are simulated from the judge's conditions (`src/scenario.py`). Flight, delay, cause and arrival queue are real.\n- One aircraft at a time, no knock-on effects.\n- Rules are simplified: time gaps instead of nautical miles for wake, observed arrivals x a weather factor for capacity, fuel as minutes of endurance. See the simplification column in `data/rules.json`.\n- The evaluation runs in our own simulator and the baselines use the same rulebook. Numbers are relative comparisons, not operational data.\n- flights.csv is a 358,774-row subset, so the arrival queue is about 6% of real traffic density.\n")
     open("docs/EVAL.md", "w").write("".join(md))
     print("wrote docs/EVAL.md")
