@@ -15,6 +15,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 ## Done
 
+- [x] UI polish (branch `ui-3d-aircraft`): 3D airliner holding over the runway on the intro (three.js 0.170.0); the judge's weather shows on the setup and live-run screens (rain and lightning, fog, sun) and other non-normal conditions as yellow signs top-right; no-plan timer shows ms instead of overflowing
 - [x] Repo, README, MIT license, .gitignore, project CLAUDE.md
 - [x] Contracts: `data/sample_log.json`, `data/sample_eval.json`, `data/rules.json`; field list in `docs/API.md`
 - [x] `scripts/build_pool.py` and a real 20-flight `data/pool.json` from the flights.csv subset (358k rows, ATL arrivals)
