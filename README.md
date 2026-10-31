@@ -23,31 +23,33 @@ arrival. **Status quo:** three phone calls and a guess.
 
 ## How the agents work together
 
-ATC is the chief. Pilot and Ground advise; ATC decides. But nobody, not even
-ATC, can pick an option that breaks a hard safety constraint, because those
-options are removed by plain rules before any agent sees them.
+Three LLM agents, one for each desk, argue over five candidate plans. A chief
+written in code (not an LLM) weighs their answers, ATC counting most, and
+proposes a compromise. Every proposal an agent makes goes through the rulebook
+in `src/rules.py`; anything that breaks a hard rule is blocked with the rule id
+and its source, and the chief never adopts it. Max 3 rounds, then the chief
+picks the cheapest legal option. A human approves or overrides at the end.
 
 ```
 disruption (one row from the 2015 US DOT flight delay data)
         |
         v
-[rules] build the legal option set: runway slots x free gates
-        drop anything that breaks a hard constraint
-        (fuel minimum, wake separation, gate already occupied)
+[code] 5 candidate plans: ETA + 0/6/12/20/30 min, a gate each, slow-down or hold
+       not filtered: an agent may propose an illegal one, the rulebook blocks it
         |
         v
-turn 1
-  ATC     picks a proposal from the legal set
-  Pilot   accept / counter, with reason
-  Ground  accept / counter, with reason
-  ATC     rules on the counters: keep own proposal, or adopt one
+round 1
+  ATC / Pilot / Ground   three parallel Haiku calls, each sees only its own data
+  [code] rulebook        WAKE-01, CAP-01, FUEL-01, GATE-01 on every proposal -> BLOCKED + source
+  [code] chief           consensus? else compromise (ATC 3, Pilot 2, Ground 1), only legal options
         |
         v
-both accept -> consensus, done
-otherwise   -> ATC's ruling becomes the turn 2 proposal
+all three accept the chief's proposal -> consensus, done
+otherwise -> round 2, round 3
         |
         v
-after turn 3 with no consensus -> ATC picks from the legal set, no more asking
+after round 3 with no consensus -> chief picks the cheapest legal option
+no legal option at all          -> "no safe plan", hand to the human
         |
         v
 final plan + full negotiation log + "pending human controller confirmation"
@@ -57,18 +59,17 @@ Turn cap is fixed at 3. No open-ended agent chatter.
 
 | Agent | Role | Hard constraints (veto, enforced by rules) | Soft goals (negotiated) |
 |---|---|---|---|
-| ATC | chief, decides | wake separation, runway closure, taxiway blockage | sector throughput |
-| Pilot | advises | fuel below minimum reserve, flight safety | passenger connections, less turbulence |
-| Ground | advises | gate already occupied at that time | keep original gate, avoid crew overtime, short turnaround |
+| ATC | weight 3 | WAKE-01 wake separation, CAP-01 slot capacity | sector throughput |
+| Pilot | weight 2 | FUEL-01 landing fuel reserve | passenger connections, land early |
+| Ground | weight 1 | GATE-01 gate conflict | keep original gate, avoid crew overtime, next leg on time |
 
 **Two layers of priority**
 
-1. Hard constraints have no priority. Each one is a veto. They live in
-   `constraints.py` as pure functions and never go through an LLM.
-2. Soft goals are where the agents actually negotiate. When ATC rules on
-   counters it follows a fixed order: does the counter hurt runway
-   throughput? If not, Pilot's counter beats Ground's (passengers and fuel
-   margin over gate convenience).
+1. Hard rules have no priority. Each one is a veto. They live in
+   `src/rules.py` as pure functions and never go through an LLM.
+2. Soft goals are where the agents actually negotiate. The chief scores the
+   desks' choices ATC 3, Pilot 2, Ground 1 and breaks ties on the soft cost
+   (delay + missed connections + crew overtime).
 
 **Every message has the same shape**
 
@@ -98,27 +99,42 @@ between agents.
 - Human in the loop: the final plan is a recommendation. The log shows what
   Pilot and Ground objected to, so a human controller can overrule it.
 
-## Status
+## Run it
 
-Design in progress (hackathon day, 31 Oct 2026). Code is not in yet.
-The turn cap is fixed at 3: if the agents have not agreed by then, the
-deterministic fallback decides. No open-ended agent chatter.
+```bash
+# backend (Python 3.11+)
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+export ANTHROPIC_API_KEY=...            # optional: without it the agents fall back to rules
+.venv/bin/uvicorn src.api:app --port 8000
 
-## Planned repo layout
+# frontend
+cd ui && npm install && npm run dev     # http://localhost:5173, /api is proxied to :8000
+```
+
+Without the backend the UI replays `data/sample_log.json`, so the demo still runs.
+
+```bash
+.venv/bin/python -m src.scenario      # one world: real flight + simulated gates/fuel/crew
+.venv/bin/python -m src.candidates    # the 5 candidate plans
+.venv/bin/python -m src.rules         # every candidate through the 4 rules, two weather settings
+```
+
+## Repo layout
 
 ```
-data/        airlines.csv, airports.csv, sample_event.json, how to get flights.csv
+ui/          React deck + live console (see ui/DESIGN.md)
 src/
-  messages.py        the one message shape every agent uses
-  constraints.py     hard rules, pure functions, no AI
-  fallback.py        deterministic plan when agents cannot agree
-  negotiation.py     the 3-turn loop and the consensus log
-  pick_event.py      pick a disruption row from flights.csv
-  agents/            atc_agent.py, pilot_agent.py, ground_agent.py
-  main.py            entry point
-tests/       pytest for the rules and the loop
-docs/        PLAN.md (team plan), EVAL.md (what we tested, where it fails)
-logs/        generated consensus logs (git-ignored)
+  scenario.py     real row from data/pool.json + simulated world from the judge's conditions
+  candidates.py   5 candidate plans, unfiltered
+  rules.py        WAKE-01, CAP-01, FUEL-01, GATE-01 + soft cost. pure Python
+  agents.py       three Haiku agents, parallel, fixed JSON (issue #3)
+  chief.py        code, not LLM: consensus check and compromise (issue #4)
+  negotiation.py  the 3-round loop, writes the log JSON (issue #4)
+  api.py          FastAPI, POST /api/run (issue #4)
+scripts/     build_pool.py (real flights from flights.csv), evaluate.py
+data/        pool.json, rules.json, sample_log.json (UI contract), sample_eval.json
+docs/        API.md (contract), PROGRESS.md (handoff), PLAN.md, EVAL.md
+logs/        one JSON per run (git-ignored)
 ```
 
 ## Honest evaluation

@@ -2,7 +2,7 @@
 
 > 每次 commit 都更新。Norman 的 Claude 用量滿了，隊友從「下一步」直接接著做。接手前先讀根目錄 `CLAUDE.md`。
 
-最後更新：10/31 12:55 · branch `ui-concord` · 做的人：Norman + Claude
+最後更新：10/31 13:10 · branch `ui-concord` · 做的人：Norman + Claude
 
 ## 怎麼跑
 
@@ -16,6 +16,8 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 - [x] 按 Run negotiation 後新增 live 動畫頁（`ui/src/demo/LiveScene.jsx`）：資料流向、三個 Haiku 的決定、規則擋下、Chief、方案，旁邊計時器 + 事件列表。後端不串流，所以等待時是真實計時，結果回來後逐步播放
 - [x] UI 第四版（branch `ui-impeccable`）：改成「一個畫面一件事」的引導式 demo，照 PLAN.md 的 3 分鐘腳本走：Problem → 選條件 → 航班/時間軸 → 每輪一頁 → 被擋的提案放大一頁 → 方案 + Approve → 追溯 → 失敗案例 → 評估數字 → 口號。只做 16:9 淺色，拿掉深色、完整 log 頁、防呆檢查。說明在 `ui/DESIGN.md`
 - [x] UI 第三版（branch `ui-impeccable`）：用 impeccable 重做視覺，偵測器 13 → 0 個問題。改成 4 頁 PPT 式翻頁（Intro / Set the conditions / Console / Evidence），固定 16:9 舞台等比縮放，不做手機版。條件和航班選擇獨立一頁，按 Run 才開始跑（console 不再自動跑）。協商板改成「桌子橫排、回合直排」，Chief 裁決只出現一次橫跨三欄。設計規則寫在 `ui/DESIGN.md`
+- [x] `src/scenario.py`、`src/candidates.py`、`src/rules.py`（issue #2 第一、二部分），20 筆 pool × 3 組條件跑過沒炸
+- [x] UI 第三版（Ma Mingyang）：1600×900 舞台、一頁一件事，設計說明 `ui/DESIGN.md`
 - [x] UI 第二版：3 頁（Intro / Console / Evidence），console 打開自動跑一場，三個桌子佔滿畫面。審查過，7 個必修都修了
 - [x] UI 第一版（branch ui-concord）：7 頁 deck（Title、Problem、How it works、Console、Evidence、Rules、Closing），鍵盤左右翻頁，淺色深色兩套主題
 - [x] Console：6 個環境維度按鈕 + 真實航班下拉 + Run；FlightStrip（REAL/SIM 標記）；到達隊列時間軸；三欄 agent 逐條顯示 + Chief 列；規則面板（紅色攔截）；決定卡（Approve / Override / Why 追溯 / Replay）
@@ -28,9 +30,10 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 - [x] flights.csv 下載好了，在 repo 上一層 `../flights.csv`
 - [x] Vite + React 骨架 `ui/`（package.json、vite.config.js、index.html、main.jsx）
 
-## 進行中
+## 進行中（後端分工見 GitHub issue #1 到 #4）
 
-- [ ] 等後端 `POST /api/run`。合約寫在 `docs/API.md`
+- [ ] issue #2（Norman）：scenario / candidates / rules / evaluate.py 已 merge 進 main（審查過）。evaluate.py 等 #4 的 `run()` 出現就能跑正式數字：`.venv/bin/python scripts/evaluate.py`（先用 `--stub` 驗過流程）
+- [ ] issue #3、#4：隊友
 
 ## 下一步（按順序，誰接手就從第一個沒打勾的開始）
 
@@ -53,5 +56,8 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 - Chrome 擴充套件打不開 localhost，截圖驗證沒做成，自己開 http://localhost:5173 看
 
 ## 合約變更紀錄
+
+- 13:00 scenario：many_connecting 的 connection_cutoff 改成 ETA+15（原規格 ETA+35 讓誰都不會錯過轉機）
+- 13:00 evaluate：FCFS 基準改成「最早跑道時段 + 原登機口、不協調登機口、門被佔在滑行道等」，才是現狀；原規格的「最早合法候選」跟全知最佳化幾乎一樣，比不出東西
 
 - 11:50 sample_log.json 加了 `environment`、`arrival_queue`、`decision.trace`、CHIEF 的訊息
