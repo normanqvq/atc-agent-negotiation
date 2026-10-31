@@ -2,16 +2,28 @@
 
 > 每次 commit 都更新。Norman 的 Claude 用量滿了，隊友從「下一步」直接接著做。接手前先讀根目錄 `CLAUDE.md`。
 
-最後更新：10/31 12:55 · branch `ui-concord` · 做的人：Norman + Claude
+最後更新：10/31 13:20 · branch `backend` · 做的人：Simon + Claude (backend, issue #1-#4)
 
 ## 怎麼跑
 
 ```bash
-cd ui && npm install && npm run dev     # 前端 http://localhost:5173
-# 後端還沒寫，會跑在 :8000
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/uvicorn src.api:app --port 8000   # backend, needs ANTHROPIC_API_KEY for Haiku (rule-based without it)
+cd ui && npm install && npm run dev         # 前端 http://localhost:5173, /api -> :8000
+.venv/bin/python -m src.main --pool 16 --weather thunderstorm --runway single --passengers many_connecting
+.venv/bin/python scripts/evaluate.py        # 60 runs -> data/sample_eval.json + docs/EVAL.md
 ```
 
 ## 已完成
+
+- [x] Backend, closes the loop (issues #1-#4, branch `backend`):
+  - `src/scenario.py` + `src/candidates.py`: world from pool.json + simulated gates/fuel/crew/connections, 5 candidates (illegal ones kept on purpose)
+  - `src/rules.py`: WAKE-01, CAP-01, FUEL-01, GATE-01 + soft_cost, pure Python
+  - `src/agents.py`: 3 independent Haiku calls in parallel per round, strict `respond` tool, rule-based fallback per desk
+  - `src/chief.py` + `src/negotiation.py`: consensus / weighted compromise (ATC 3, PILOT 2, GROUND 1) / final pick, max 3 rounds, no_safe_plan, one log per run in `logs/`
+  - `src/api.py` (POST /api/run, GET /api/health) + `src/main.py`
+  - `scripts/evaluate.py` -> real numbers in `data/sample_eval.json`, report in `docs/EVAL.md`
+  - Demo flight: pool 16 (DL1126) + Thunderstorm + Single + Many connecting -> several CAP-01 / WAKE-01 blocks, 3 rounds
 
 - [x] 按 Run negotiation 後新增 live 動畫頁（`ui/src/demo/LiveScene.jsx`）：資料流向、三個 Haiku 的決定、規則擋下、Chief、方案，旁邊計時器 + 事件列表。後端不串流，所以等待時是真實計時，結果回來後逐步播放
 - [x] UI 第四版（branch `ui-impeccable`）：改成「一個畫面一件事」的引導式 demo，照 PLAN.md 的 3 分鐘腳本走：Problem → 選條件 → 航班/時間軸 → 每輪一頁 → 被擋的提案放大一頁 → 方案 + Approve → 追溯 → 失敗案例 → 評估數字 → 口號。只做 16:9 淺色，拿掉深色、完整 log 頁、防呆檢查。說明在 `ui/DESIGN.md`
@@ -30,7 +42,8 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 進行中
 
-- [ ] 等後端 `POST /api/run`。合約寫在 `docs/API.md`
+- [ ] Click through the UI with the real backend: normal / blocked (pool 16) / failure scenarios, screenshots on issue #4
+- [ ] Demo rehearsal x2 under 3 min, backend-off fallback test once (issue #3 part 2)
 
 ## 下一步（按順序，誰接手就從第一個沒打勾的開始）
 
@@ -38,12 +51,12 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 2. [x] `ui/src/App.jsx` deck 骨架：7 頁，鍵盤左右翻頁
 3. [x] demo console 元件
 4. [x] 評估頁讀 `data/sample_eval.json`，規則頁讀 `data/rules.json`
-5. [ ] `scripts/build_pool.py`：flights.csv → `data/pool.json`（20 筆 ATL 到達，WEATHER_DELAY>15 或 LATE_AIRCRAFT_DELAY>20，附同日前後一小時到達隊列）
-6. [ ] `data/rules.json` 四條規則 + 出處
-7. [ ] 後端 `src/api.py`（FastAPI）`POST /api/run` 先回 sample_log.json，再逐步換成真的
-8. [ ] `src/constraints.py` 四條規則、`src/candidates.py` 候選方案生成
-9. [ ] `src/agents.py` 三個 Haiku 呼叫 + `src/chief.py` 協調器和保底
-10. [ ] `scripts/evaluate.py` → 真的 `data/sample_eval.json`
+5. [x] `scripts/build_pool.py`：flights.csv → `data/pool.json`（20 筆 ATL 到達，WEATHER_DELAY>15 或 LATE_AIRCRAFT_DELAY>20，附同日前後一小時到達隊列）
+6. [x] `data/rules.json` 四條規則 + 出處
+7. [x] 後端 `src/api.py`（FastAPI）`POST /api/run` 先回 sample_log.json，再逐步換成真的
+8. [x] `src/constraints.py` 四條規則、`src/candidates.py` 候選方案生成
+9. [x] `src/agents.py` 三個 Haiku 呼叫 + `src/chief.py` 協調器和保底
+10. [x] `scripts/evaluate.py` → 真的 `data/sample_eval.json`
 11. [ ] 回放按鈕、轉場動畫（15:30 之後）
 
 ## 卡住的 / 要問的
@@ -55,3 +68,4 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 ## 合約變更紀錄
 
 - 11:50 sample_log.json 加了 `environment`、`arrival_queue`、`decision.trace`、CHIEF 的訊息
+- 13:20 backend log adds fields the UI ignores: top-level `eta` and `sim` (simulated values, for audit), `meta.fallback_calls`, `meta.log_file`. `rule_checks` lists the final plan's 4 checks first, then the blocked ones (with `message_id`)

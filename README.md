@@ -100,34 +100,56 @@ between agents.
 
 ## Status
 
-Design in progress (hackathon day, 31 Oct 2026). Code is not in yet.
-The turn cap is fixed at 3: if the agents have not agreed by then, the
-deterministic fallback decides. No open-ended agent chatter.
+Working end to end (31 Oct 2026). The UI calls `POST /api/run`; the backend
+runs three independent `claude-haiku-5-5` agents in parallel each round, the
+rule layer blocks unsafe proposals, and the Chief (plain code) decides within
+3 rounds. Without `ANTHROPIC_API_KEY` the agents fall back to simple rules and
+the demo still runs. If the backend is down, the UI replays
+`data/sample_log.json`.
 
-## Planned repo layout
+## How to run
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+export ANTHROPIC_API_KEY=...                      # optional, rule-based agents without it
+.venv/bin/uvicorn src.api:app --port 8000         # backend
+cd ui && npm install && npm run dev               # UI on :5173, /api goes to :8000
+
+.venv/bin/python -m src.main --pool 16 --weather thunderstorm --runway single --passengers many_connecting
+.venv/bin/python scripts/evaluate.py              # 60-run evaluation -> data/sample_eval.json, docs/EVAL.md
+```
+
+Good demo flight: pool 16 (DL1126) with Thunderstorm + Single runway + Many
+connecting. Its earliest slot breaks CAP-01, so the rule layer visibly blocks
+proposals.
+
+## Repo layout
 
 ```
-data/        airlines.csv, airports.csv, sample_event.json, how to get flights.csv
+data/        pool.json (20 real flights), rules.json, sample_log.json / sample_eval.json (UI contracts)
 src/
-  messages.py        the one message shape every agent uses
-  constraints.py     hard rules, pure functions, no AI
-  fallback.py        deterministic plan when agents cannot agree
-  negotiation.py     the 3-turn loop and the consensus log
-  pick_event.py      pick a disruption row from flights.csv
-  agents/            atc_agent.py, pilot_agent.py, ground_agent.py
-  main.py            entry point
-tests/       pytest for the rules and the loop
-docs/        PLAN.md (team plan), EVAL.md (what we tested, where it fails)
-logs/        generated consensus logs (git-ignored)
+  scenario.py        build_scenario: real flight + simulated gates/fuel/crew/connections
+  candidates.py      build_candidates: 5 landing slots, illegal ones kept on purpose
+  rules.py           WAKE-01, CAP-01, FUEL-01, GATE-01 + soft cost. Pure Python, no AI
+  agents.py          three Haiku desks (ATC, Pilot, Ground), parallel, rule-based fallback
+  chief.py           consensus check, weighted compromise, final pick. Code, not an LLM
+  negotiation.py     run(): the 3-round loop, returns the sample_log.json shape
+  api.py             FastAPI: POST /api/run, GET /api/health
+  main.py            command line run
+scripts/     build_pool.py, evaluate.py
+ui/          Vite + React demo deck
+docs/        PLAN.md, PROGRESS.md, API.md, EVAL.md
+logs/        one JSON per run (git-ignored)
 ```
 
 ## Honest evaluation
 
-See `docs/EVAL.md` (to be filled in during the hackathon). We will report:
-
-- how many of N sampled disruptions reach consensus within 3 turns
-- how many fall back to the deterministic plan, and why
-- at least one case where the agents disagree or the system declines
+See `docs/EVAL.md`: 60 runs (20 real flights x 3 condition sets), consensus
+rate, injected unsafe proposals blocked, baselines, a failure case and the
+limitations. The numbers are not tuned; with the current cost model the
+earliest legal slot is always cheapest, so Concord ties or loses slightly to
+first come, first served on delay. The measured win is that no final plan
+breaks a hard rule.
 
 ## Data
 

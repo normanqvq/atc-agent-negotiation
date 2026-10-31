@@ -1,32 +1,32 @@
 {
-  "_note": "Contract for the evidence page. The batch script writes this file. Values are examples.",
-  "n_events": 30,
-  "pool_note": "30 real disruptions never looked at during development, random seed 42",
+  "_note": "Written by scripts/evaluate.py (2026-10-31 13:15). Agents: claude-haiku-5-5, 3 separate calls per round in parallel. See docs/EVAL.md.",
+  "n_events": 60,
+  "pool_note": "60 runs: 20 real ATL arrivals from US DOT 2015 x 3 condition sets, agents: claude-haiku-5-5",
   "headline": {
-    "consensus_rate": 0.83,
-    "injected_violations_blocked": "24 / 24",
-    "delay_vs_fcfs_min": -11.2
+    "consensus_rate": 0.97,
+    "injected_violations_blocked": "16 / 16",
+    "delay_vs_fcfs_min": 0.0
   },
   "baselines": [
     {
       "name": "First come, first served",
-      "avg_delay_min": 52.1,
-      "missed_connections": 41,
-      "overtime_min": 180,
+      "avg_delay_min": 67.7,
+      "missed_connections": 38,
+      "overtime_min": 520,
       "measured": true
     },
     {
       "name": "Concord (3-desk negotiation)",
-      "avg_delay_min": 40.9,
-      "missed_connections": 19,
-      "overtime_min": 95,
+      "avg_delay_min": 67.7,
+      "missed_connections": 38,
+      "overtime_min": 520,
       "measured": true
     },
     {
       "name": "Omniscient optimiser (upper bound)",
-      "avg_delay_min": 37.5,
-      "missed_connections": 14,
-      "overtime_min": 80,
+      "avg_delay_min": 67.7,
+      "missed_connections": 38,
+      "overtime_min": 520,
       "measured": true
     }
   ],
@@ -43,10 +43,10 @@
     }
   ],
   "failure_case": {
-    "row_id": 51077,
-    "summary": "Fog + single runway + low fuel: zero legal candidates",
-    "what_happened": "The rule layer removed every slot. The system reported 'no safe plan, recommend diversion' and handed over to the human.",
-    "why": "With the rate halved, the earliest slot was 40 minutes out and fuel could not cover it.",
-    "fix": "Add diversion airports as candidates so the agents can negotiate a diversion instead of giving up."
+    "row_id": 246028,
+    "summary": "Stress test: fog + one runway closed + low fuel + gate zone closed: zero legal candidates for DL1126",
+    "what_happened": "The rule layer blocked all 5 candidate slots (CAP-01 2, FUEL-01 2, WAKE-01 1). No agent was asked; the system reported 'no safe plan, consider diversion' and handed over to the duty manager.",
+    "why": "Acceptance dropped to 1 arrival per 10 min, and every candidate slot hit a hard rule: #1 18:15: 18:10-18:20 already has 2 arrivals, fog + one closed runway limit is 1; #2 18:21: preceding EV5335 is Medium, gap 0 min < 2; #3 18:27: 18:20-18:30 already has 2 arrivals, fog + one closed runway limit is 1; ...",
+    "fix": "Add later slots and diversion airports as candidates, so the desks can negotiate a longer hold or a diversion instead of giving up."
   }
 }
