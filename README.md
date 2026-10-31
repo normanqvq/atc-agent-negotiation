@@ -15,7 +15,7 @@
 
 [Demo](#-demo) · [How it works](#-how-it-works) · [The rulebook](#-the-rulebook) · [Results](#-results) · [Quick start](#-quick-start) · [API](#-api) · [Limits](#-honest-limits)
 
-<img src="docs/screenshots/live-blocked.png" alt="Concord live run: the Pilot's proposal is blocked by WAKE-01, the chief picks the cheapest legal option" width="900">
+<img src="docs/screenshots/live-blocked.png" alt="Concord live run: the Pilot's counter is blocked by WAKE-01, the chief picks the cheapest legal option" width="900">
 
 </div>
 
@@ -40,7 +40,7 @@ One React page is both the pitch deck and the live demo. Walk it with **→**: *
 | All conditions normal | Thunderstorm, single runway | Fog, runway closed, low fuel |
 |:---:|:---:|:---:|
 | <img src="docs/screenshots/live-normal.png" width="300"> | <img src="docs/screenshots/live-blocked.png" width="300"> | <img src="docs/screenshots/live-no-plan.png" width="300"> |
-| Consensus in round 2 | Pilot's counter **blocked by WAKE-01**, chief compromises | **No safe plan**: the rulebook left no legal candidate, agents are never called |
+| Consensus in round 2 | Pilot's counter **blocked by WAKE-01**, no consensus in 3 rounds, chief picks the cheapest legal option | **No safe plan**: the rulebook left no legal candidate, agents are never called |
 
 If the backend is down the UI replays `data/sample_log.json` and shows a **Replay** stamp, so the demo survives a dead venue network.
 
@@ -140,7 +140,7 @@ The step-by-step test script we used on hackathon day is in [`docs/TESTING.md`](
 
 ## 🔌 API
 
-The frontend calls exactly one endpoint. Contract and field list in [`docs/API.md`](docs/API.md).
+The frontend calls one endpoint (`/api/health` is only a ping). Contract and field list in [`docs/API.md`](docs/API.md).
 
 ```http
 POST /api/run

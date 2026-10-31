@@ -1,5 +1,5 @@
 {
-  "_note": "Rule table. UI rules page and backend constraints.py both read this. Check every citation against the source text before the demo.",
+  "_note": "Rule table. UI rules page and src/rules.py both read this. Check every citation against the source text before the demo.",
   "rules": [
     {
       "id": "WAKE-01",
