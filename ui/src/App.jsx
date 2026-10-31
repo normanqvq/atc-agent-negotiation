@@ -45,8 +45,9 @@ export default function App() {
 
   // the judge's choices, and the run they produced
   const [env, setEnv] = useState(defaultEnvironment())
-  // start on flight #16: the one that produces a blocked proposal under thunderstorm + single runway
-  const DEFAULT_FLIGHT = 16
+  // every pool flight now shows a blocked proposal under thunderstorm + single runway;
+  // flights 1 to 7 also give No safe plan under fog + one closed + low fuel + zone closed
+  const DEFAULT_FLIGHT = 1
   const [poolIndex, setPoolIndex] = useState(poolFile.flights.some(f => f.pool_index === DEFAULT_FLIGHT) ? DEFAULT_FLIGHT : poolFile.flights[0].pool_index)
   const [log, setLog] = useState(null)
   const [ranEnv, setRanEnv] = useState(env)

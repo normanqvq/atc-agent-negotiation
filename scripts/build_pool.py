@@ -10,8 +10,10 @@ stable between runs. The UI tags it SIM.
 
 usage: python scripts/build_pool.py [path/to/flights.csv] [--n 20] [--airport ATL]
 """
-import sys, json, argparse, hashlib
+import sys, os, json, argparse, hashlib
 import pandas as pd
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
 parser = argparse.ArgumentParser()
 parser.add_argument("csv", nargs="?", default="data/flights.csv")
@@ -19,6 +21,7 @@ parser.add_argument("--n", type=int, default=20)
 parser.add_argument("--airport", default="ATL")
 parser.add_argument("--seed", type=int, default=42)
 parser.add_argument("--out", default="data/pool.json")
+parser.add_argument("--oversample", type=int, default=12, help="sample this many x n, then keep the demo-friendly ones")
 args = parser.parse_args()
 
 cols = ["YEAR", "MONTH", "DAY", "AIRLINE", "FLIGHT_NUMBER", "TAIL_NUMBER",
@@ -54,7 +57,7 @@ cand = arr[((arr.WEATHER_DELAY > 15) | (arr.LATE_AIRCRAFT_DELAY > 20))
            & (arr.ARRIVAL_DELAY >= 20) & (arr.ARRIVAL_DELAY <= 120)
            & (arr.SCHEDULED_ARRIVAL >= 700) & (arr.SCHEDULED_ARRIVAL <= 2200)]
 print("matching disruptions:", len(cand))
-picked = cand.sample(n=min(args.n, len(cand)), random_state=args.seed).sort_values(["MONTH", "DAY", "SCHEDULED_ARRIVAL"])
+picked = cand.sample(n=min(args.n * args.oversample, len(cand)), random_state=args.seed).sort_values(["MONTH", "DAY", "SCHEDULED_ARRIVAL"])
 
 flights = []
 for i, (_, r) in enumerate(picked.iterrows(), start=1):
@@ -93,10 +96,47 @@ for i, (_, r) in enumerate(picked.iterrows(), start=1):
         "arrival_queue": queue,
     })
 
+# ---- keep the demo-friendly ones ----
+# a flight is worth showing if, under the "Blocked" conditions, the earliest candidate
+# is illegal (so a desk asking for it gets stopped by the rulebook) while a legal
+# option still exists, and under normal conditions the earliest candidate is legal.
+# flights that also have zero legal candidates under the worst conditions go first:
+# the judge gets Blocked and No-safe-plan from the same flight.
+import os, tempfile
+from src import scenario as scen
+from src.candidates import build_candidates
+from src.rules import is_legal
+
+tmp = tempfile.NamedTemporaryFile("w", suffix=".json", delete=False)
+json.dump({"flights": flights}, tmp); tmp.close()
+scen.POOL_PATH = tmp.name
+
+STORM = {"weather": "thunderstorm", "runway": "single", "passengers": "many_connecting"}
+WORST = {"weather": "fog", "runway": "one_closed", "aircraft_status": "low_fuel", "terminal": "zone_closed"}
+
+def legal_flags(f, env):
+    w = scen.build_scenario(f["pool_index"], env)
+    return [is_legal(w, c) for c in build_candidates(w)]
+
+keep = []
+for f in flights:
+    storm = legal_flags(f, STORM)
+    normal = legal_flags(f, {})
+    if normal[0] and not storm[0] and any(storm):
+        f["_no_plan_when_worst"] = not any(legal_flags(f, WORST))
+        keep.append(f)
+os.unlink(tmp.name)
+keep.sort(key=lambda f: (not f["_no_plan_when_worst"], f["date"], f["scheduled_arrival"]))
+keep = keep[:args.n]
+for i, f in enumerate(keep, start=1):
+    f["pool_index"] = i
+    f.pop("_no_plan_when_worst")
+print("demo-friendly flights kept:", len(keep), "of", len(flights), "sampled")
+
 out = {
-    "_note": f"Real {args.airport} arrivals from flights.csv matching WEATHER_DELAY>15 or LATE_AIRCRAFT_DELAY>20, seed {args.seed}. wake_category is simulated from the tail number.",
+    "_note": f"Real {args.airport} arrivals from flights.csv matching WEATHER_DELAY>15 or LATE_AIRCRAFT_DELAY>20, seed {args.seed}, oversampled x{args.oversample} and filtered to flights whose earliest slot is blocked under thunderstorm + single runway. wake_category is simulated from the tail number.",
     "airport": args.airport,
-    "flights": flights,
+    "flights": keep,
 }
 json.dump(out, open(args.out, "w"), indent=2)
-print("wrote", args.out, "with", len(flights), "flights")
+print("wrote", args.out, "with", len(keep), "flights")

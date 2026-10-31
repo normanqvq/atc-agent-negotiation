@@ -45,7 +45,7 @@ Terminal 2:
 cd ui && npm install && npm run dev      # http://localhost:5173
 ```
 
-Walk the three scenarios from the first screen to the last with → (press Run on the setup screen):
+Walk the three scenarios from the first screen to the last with → (press Run on the setup screen). Any pool flight shows a blocked proposal in the Blocked scenario; flights 1 to 7 also give No safe plan in the No-plan scenario (pool rebuilt on 31 Oct 14:45):
 
 | Scenario | Settings | Expect |
 |---|---|---|
