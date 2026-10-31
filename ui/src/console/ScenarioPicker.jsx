@@ -20,54 +20,29 @@ export function labelFor(key, value) {
   return o ? o[1] : value
 }
 
-export default function ScenarioPicker({ env, onEnv, pool, poolIndex, onPoolIndex, onRun, running, compact, onChange }) {
-  // after a run we collapse to a row of chips so the screen is about the negotiation
-  if (compact) {
-    return (
-      <div className="panel">
-        <div className="panel-title"><h3>Scenario</h3><span className="who who--human">set by judge</span></div>
-        <div className="chips">
-          {DIMENSIONS.map(d => <span key={d.key} className="chip chip--env">{d.label}: {labelFor(d.key, env[d.key])}</span>)}
-        </div>
-        <div className="btn-row">
-          <button className="btn btn--ghost" onClick={onChange}>Change scenario</button>
-        </div>
-      </div>
-    )
-  }
-
+// one row of dropdowns across the top, so the three desks get the whole screen
+export default function ScenarioPicker({ env, onEnv, pool, poolIndex, onPoolIndex, onRun, running }) {
   return (
-    <div className="panel">
-      <div className="panel-title"><h3>Set the scenario</h3><span className="who who--human">judge</span></div>
+    <div className="picker">
       {DIMENSIONS.map(d => (
-        <div className="dim" key={d.key}>
-          <span className="dim-label">{d.label}</span>
-          <div className="seg" role="group" aria-label={d.label}>
-            {d.options.map(([value, label]) => (
-              <button
-                key={value}
-                aria-pressed={env[d.key] === value}
-                onClick={() => onEnv({ ...env, [d.key]: value })}
-              >{label}</button>
-            ))}
-          </div>
-        </div>
-      ))}
-      <div className="dim">
-        <span className="dim-label">Real flight (2015 US DOT data)</span>
-        <div className="pool-select">
-          <select id="pool-index" value={poolIndex} onChange={e => onPoolIndex(Number(e.target.value))}>
-            {pool.map(f => (
-              <option key={f.pool_index} value={f.pool_index}>
-                #{f.pool_index} · {f.flight} {f.origin}→{f.destination} · {f.date} · +{f.delay_min} min
-              </option>
-            ))}
+        <label className="pick" key={d.key}>
+          <span>{d.label}</span>
+          <select id={'pick-' + d.key} value={env[d.key]} onChange={e => onEnv({ ...env, [d.key]: e.target.value })}>
+            {d.options.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
-        </div>
-      </div>
-      <div className="btn-row">
-        <button className="btn" onClick={onRun} disabled={running}>{running ? 'Negotiating…' : 'Run negotiation'}</button>
-      </div>
+        </label>
+      ))}
+      <label className="pick pick--flight">
+        <span>Real flight</span>
+        <select id="pick-flight" value={poolIndex} onChange={e => onPoolIndex(Number(e.target.value))}>
+          {pool.map(f => (
+            <option key={f.pool_index} value={f.pool_index}>
+              #{f.pool_index} {f.flight} {f.origin}→{f.destination} {f.date} +{f.delay_min}m
+            </option>
+          ))}
+        </select>
+      </label>
+      <button className="btn" onClick={onRun} disabled={running}>{running ? 'Negotiating…' : 'Run'}</button>
     </div>
   )
 }

@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import Title from './slides/Title.jsx'
-import Problem from './slides/Problem.jsx'
-import HowItWorks from './slides/HowItWorks.jsx'
+import Intro from './slides/Intro.jsx'
 import Console from './console/Console.jsx'
 import Evidence from './slides/Evidence.jsx'
-import RulesSlide from './slides/RulesSlide.jsx'
-import Closing from './slides/Closing.jsx'
 
-// the deck is just a list of slide components, in order
-const slides = [Title, Problem, HowItWorks, Console, Evidence, RulesSlide, Closing]
+// three pages: the pitch, the live console, the evidence
+const slides = [Intro, Console, Evidence]
 
 export default function App() {
   const deckRef = useRef(null)
@@ -23,7 +19,7 @@ export default function App() {
     setIdx(next)
   }
 
-  // arrow keys flip slides, unless the judge is typing in a form control
+  // arrow keys flip pages, unless the judge is using a form control
   useEffect(() => {
     function onKey(e) {
       const tag = document.activeElement && document.activeElement.tagName
@@ -66,10 +62,10 @@ export default function App() {
       <div className="deck" ref={deckRef}>
         {slides.map((Slide, i) => <Slide key={i} />)}
       </div>
-      <div className="nav" aria-label="Slide navigation">
+      <div className="nav" aria-label="Page navigation">
         <span className="num">{idx + 1} / {slides.length}</span>
-        <button onClick={() => goTo(idx - 1)} aria-label="Previous slide">‹</button>
-        <button onClick={() => goTo(idx + 1)} aria-label="Next slide">›</button>
+        <button onClick={() => goTo(idx - 1)} aria-label="Previous page">‹</button>
+        <button onClick={() => goTo(idx + 1)} aria-label="Next page">›</button>
         <button onClick={toggleTheme} aria-label="Toggle light or dark theme">◐</button>
       </div>
     </>

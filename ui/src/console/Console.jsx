@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import sampleLog from '../../../data/sample_log.json'
 import poolFile from '../../../data/pool.json'
 import ScenarioPicker, { DIMENSIONS, defaultEnvironment, labelFor } from './ScenarioPicker.jsx'
@@ -7,6 +7,7 @@ import QueueTimeline from './QueueTimeline.jsx'
 import AgentColumns from './AgentColumns.jsx'
 import RuleChecks from './RuleChecks.jsx'
 import DecisionCard from './DecisionCard.jsx'
+import Rulebook from './Rulebook.jsx'
 import useReveal from './useReveal.js'
 
 const pool = poolFile.flights
@@ -32,6 +33,7 @@ export default function Console() {
   const [log, setLog] = useState(null)
   const [running, setRunning] = useState(false)
   const [runKey, setRunKey] = useState(0)
+  const [showRules, setShowRules] = useState(false)
   const { n, done } = useReveal(log, runKey)
 
   async function run() {
@@ -53,7 +55,9 @@ export default function Console() {
     setRunning(false)
   }
 
-  // ids of messages already on screen, for the rule panel
+  // run once on load so the three desks are talking the moment the slide opens
+  useEffect(() => { run() }, [])
+
   const revealedIds = new Set()
   const blockedIds = new Set()
   if (log) {
@@ -68,56 +72,51 @@ export default function Console() {
   }
 
   return (
-    <section className="slide slide--wide slide--top">
+    <section className="slide slide--wide slide--top slide--console">
       <div className="slide-inner">
         <div className="topbar">
           <span className="wordmark">CONCORD</span>
           <div className="legend">
             <span className="l-llm">LLM</span><span className="l-code">code</span><span className="l-human">human</span>
           </div>
+          <button className="btn btn--ghost btn--sm" onClick={() => setShowRules(s => !s)}>{showRules ? 'Hide rulebook' : 'Rulebook'}</button>
           {log && (
             <div className="meta">
               <span>{log.meta.model || 'claude-haiku-5-5'}</span>
               <span>{log.meta.elapsed_s}s · {log.meta.tokens} tokens</span>
-              <span>{log.meta.source === 'sample' ? 'REPLAY · backend offline' : 'LIVE'}</span>
+              <span className={log.meta.source === 'sample' ? 'warn' : ''}>{log.meta.source === 'sample' ? 'REPLAY · backend offline' : 'LIVE'}</span>
             </div>
           )}
         </div>
 
-        <div className="console">
-          <div className="console-side">
-            <ScenarioPicker
-              env={env} onEnv={setEnv}
-              pool={pool} poolIndex={poolIndex} onPoolIndex={setPoolIndex}
-              onRun={run} running={running}
-              compact={!!log} onChange={() => setLog(null)}
-            />
-            {log && <RuleChecks checks={log.rule_checks} revealedIds={revealedIds} done={done} />}
-          </div>
+        <ScenarioPicker
+          env={env} onEnv={setEnv}
+          pool={pool} poolIndex={poolIndex} onPoolIndex={setPoolIndex}
+          onRun={run} running={running}
+        />
 
-          <div className="console-main">
-            {!log && (
-              <div className="panel">
-                <div className="panel-title"><h3>Pick a scenario and a real flight, then run</h3></div>
-                <p className="muted">
-                  The judge sets the environment. The flight, its delay and the arrival queue come from the 2015 US DOT data.
-                  Gates, fuel, crew and connections are simulated and tagged SIM.
-                </p>
-              </div>
-            )}
-            {log && <FlightStrip scenario={log.scenario} />}
-            {log && (
-              <QueueTimeline
-                queue={{ ...log.arrival_queue, airport: log.scenario.destination }}
-                candidates={log.candidates}
-                decision={done ? log.decision : null}
-                blockedIds={blockedIds}
-              />
-            )}
-            {log && <AgentColumns log={log} revealed={n} />}
-            {log && done && <DecisionCard decision={log.decision} onReplay={() => setRunKey(k => k + 1)} />}
+        {showRules && <Rulebook onClose={() => setShowRules(false)} />}
+
+        {log && <FlightStrip scenario={log.scenario} />}
+        {log && (
+          <QueueTimeline
+            queue={{ ...log.arrival_queue, airport: log.scenario.destination }}
+            candidates={log.candidates}
+            decision={done ? log.decision : null}
+            blockedIds={blockedIds}
+          />
+        )}
+
+        {log && <AgentColumns log={log} revealed={n} />}
+
+        {log && (
+          <div className="bottom">
+            <RuleChecks checks={log.rule_checks} revealedIds={revealedIds} done={done} />
+            {done
+              ? <DecisionCard key={runKey} decision={log.decision} onReplay={() => setRunKey(k => k + 1)} />
+              : <div className="panel decision-wait"><p className="muted">Decision appears when the desks agree, or after round 3 the Chief decides.</p></div>}
           </div>
-        </div>
+        )}
       </div>
     </section>
   )

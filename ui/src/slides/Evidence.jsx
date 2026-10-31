@@ -59,6 +59,7 @@ export default function Evidence() {
             <dt>Fix</dt><dd>{ev.failure_case.fix}</dd>
           </dl>
         </div>
+        <p className="tagline">Concord. The AI can argue, but it can't break the rules.</p>
       </div>
     </section>
   )
