@@ -13,22 +13,22 @@ How to run: `.venv/bin/python scripts/evaluate.py`. Agents: claude-haiku-5-5.
 
 | | Avg delay (min) | Missed connections | Ramp overtime (min) |
 |---|---|---|---|
-| First come, first served (no gate coordination) | 110.4 | 760 | 1900 |
-| Concord (3-desk negotiation) | 67.7 | 32 | 520 |
-| Omniscient optimiser (upper bound) | 67.7 | 32 | 520 |
+| First come, first served (no gate coordination) | 81.4 | 760 | 1900 |
+| Concord (3-desk negotiation) | 48.3 | 224 | 810 |
+| Omniscient optimiser (upper bound) | 48.2 | 224 | 804 |
 
-- Consensus within 3 rounds: 59 / 60 (98%)
-- Injected illegal proposals blocked by the rule layer: 16 / 16
+- Consensus within 3 rounds: 47 / 60 (78%)
+- Injected illegal proposals blocked by the rule layer: 103 / 103
 - Zero legal candidates (no_safe_plan, excluded from averages): 0 runs; legal options existed but the negotiation returned no plan: 0 runs
-- FCFS minus Concord delay per condition set (min, positive = Concord better): all normal 30.0; thunderstorm + single runway + many connecting 29.0; fog + one runway closed + gates tight + shift ending 69.0. Most of the gap comes from the tight-gates set, where FCFS waits on the taxiway because nobody coordinated the gate.
-- Average per run: 5.5 s, 6062 tokens
+- FCFS minus Concord delay per condition set (min, positive = Concord better): all normal 30.0; thunderstorm + single runway + many connecting 14.8; fog + one runway closed + gates tight + shift ending 54.5. Most of the gap comes from the tight-gates set, where FCFS waits on the taxiway because nobody coordinated the gate.
+- Average per run: 10.2 s, 10650 tokens
 
 ## Failure case
 
-- row 135473: DL1710 (fog + one runway closed + gates tight + shift ending): costliest outcome, 117 min late, even the optimum could not do better
-- What happened: Concord and the omniscient optimiser picked the same plan (cost 130): 117 min late, 0 missed connections, 25 min ramp overtime.
-- Why: The conditions left only expensive legal slots. Negotiation cannot create runway capacity or gates that do not exist.
-- Fix: Add diversion airports and later slots as candidates, and let the Pilot desk weigh a diversion against a long hold.
+- row 13589: WN3917 (fog + one runway closed + gates tight + shift ending): negotiation ended 9 cost points above the optimum
+- What happened: Concord settled on candidate cost 76 (57 min late, 0 missed connections); the omniscient optimiser found cost 66.
+- Why: Each desk only sees its own data, so the compromise the chief could build from their answers was not the cheapest legal option.
+- Fix: Let the chief show the soft cost of every legal option to all desks in round 2.
 
 ## How the baselines are computed
 
