@@ -11,6 +11,7 @@ export default function TraceScene({ log }) {
         <p className="scene-sub">Each claim links to the agent message, rule check or data row it came from.</p>
       </div>
       <div className="trace-list">
+        {log.decision.status === 'no_safe_plan' && <p className="trace-claim">No safe plan was selected. The rulebook blocked every candidate; the duty manager must choose the next action.</p>}
         {trace.map((t, i) => (
           <div className="trace-line" key={i} style={{ animationDelay: (0.1 + i * 0.25) + 's' }}>
             <p className="trace-claim">{t.claim}</p>
