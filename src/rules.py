@@ -29,7 +29,9 @@ W_OVERTIME = 0.5     # one overtime minute ~ half a minute of delay
 
 def _src(rule_id):
     # "FAA JO 7110.65, Chapter 5-5-4" -> "FAA JO 7110.65"
-    return RULES[rule_id]["source"].split(",")[0]
+    # "14 CFR 121.639 (US domestic). ICAO ..." -> "14 CFR 121.639"
+    src = RULES[rule_id]["source"].split(",")[0].split(". ")[0]
+    return src.split(" (")[0]
 
 
 def _check(rule_id, ok, detail):
@@ -86,8 +88,8 @@ def check_fuel(world, cand):
     left = fuel_at_landing(world, cand)
     reserve = world["sim"]["min_reserve_min"]
     if left < reserve:
-        return _check("FUEL-01", False, "lands with %d min of fuel, reserve is %d" % (left, reserve))
-    return _check("FUEL-01", True, "lands with %d min of fuel, reserve is %d" % (left, reserve))
+        return _check("FUEL-01", False, "lands with %.0f min of fuel, reserve is %d" % (left, reserve))
+    return _check("FUEL-01", True, "lands with %.0f min of fuel, reserve is %d" % (left, reserve))
 
 
 def check_gate(world, cand):

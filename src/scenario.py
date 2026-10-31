@@ -47,13 +47,13 @@ def build_scenario(pool_index, env):
 
     # gates: which slots are already taken, per terminal condition
     closed = []
-    if env["terminal"] == "normal":
-        gates = {"B12": [[fmt(eta - 40), fmt(eta + 20)]], "B14": [], "C3": []}
-    elif env["terminal"] == "tight":
+    if env["terminal"] == "tight":
         gates = {"B12": [[fmt(eta - 40), fmt(eta + 60)]], "B14": [[fmt(eta - 30), fmt(eta + 15)]], "C3": []}
-    else:  # zone_closed, only the remote gate is left
+    elif env["terminal"] == "zone_closed":  # only the remote gate is left
         gates = {"B12": [], "B14": [], "C3": []}
         closed = ["B12", "B14"]
+    else:  # normal (and anything we do not recognise)
+        gates = {"B12": [[fmt(eta - 40), fmt(eta + 20)]], "B14": [], "C3": []}
 
     base = RUNWAY_BASE.get(env["runway"], 4)
     factor = WEATHER_FACTOR.get(env["weather"], 1.0)

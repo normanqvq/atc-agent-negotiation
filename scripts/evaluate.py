@@ -59,7 +59,7 @@ def fcfs_pick(world, cands):
                 return plan, False
             # gate busy or closed: sit on the taxiway until it is free, then count that as arrival time
             eta = to_min(world["eta"])
-            arrival = to_min(plan["arrival"])
+            arrival = near(to_min(plan["arrival"]), eta)
             latest_free = arrival
             for s_str, e_str in sim["gates"].get(plan["gate"], []):
                 e = near(to_min(e_str), eta)
@@ -67,7 +67,8 @@ def fcfs_pick(world, cands):
                     latest_free = e + GATE_BUFFER
             if plan["gate"] in sim["closed_gates"]:
                 latest_free = arrival + DIVERT_PENALTY_MIN   # tow to a remote stand, roughly
-            waited = dict(plan, arrival=fmt(latest_free), mode="hold")
+            # mode stays slow_down-ish on purpose: the wait is on the ground, not burning hold fuel
+            waited = dict(plan, arrival=fmt(latest_free), mode="slow_down")
             return waited, False
     # nothing safe on the runway side: pretend we divert. cost = latest candidate + penalty
     last = dict(cands[-1])
@@ -127,7 +128,8 @@ print("done in %.0fs" % (time.time() - t0))
 # ---- aggregate ----
 n = len(results)
 scored = [r for r in results if r["concord"] is not None and not r["no_legal"]]
-no_plan = [r for r in results if r["concord"] is None or r["no_legal"]]
+no_plan = [r for r in results if r["no_legal"]]                                  # rulebook left nothing legal
+neg_failed = [r for r in results if r["concord"] is None and not r["no_legal"]]  # legal options existed, negotiation returned none
 
 
 def avg(xs):
@@ -149,8 +151,17 @@ consensus = sum(1 for r in results if r["decided_by"] == "consensus")
 inj_total = sum(r["n_illegal"] for r in results)
 inj_blocked = sum(r["n_blocked"] for r in results)
 
-# failure case: a no-plan run if there is one, else the worst Concord outcome
-if no_plan:
+# failure case: a no-plan run if there is one, else a negotiation that returned nothing, else the worst outcome
+if not no_plan and neg_failed:
+    fc = neg_failed[0]
+    failure = {
+        "row_id": fc["row_id"],
+        "summary": "%s (%s): %d legal candidates existed but the negotiation returned no plan" % (fc["world"]["scenario"]["flight"], fc["label"], fc["n_candidates"] - fc["n_illegal"]),
+        "what_happened": "The desks did not converge and the chief returned no candidate, so the case went to the duty manager with the legal options listed.",
+        "why": "decided_by=%s. Likely an agent answer that failed validation in every round." % fc["decided_by"],
+        "fix": "Make the chief fall back to the cheapest legal option whenever the final round yields no candidate.",
+    }
+elif no_plan:
     fc = no_plan[0]
     reasons = {}
     for rid in fc["block_reasons"]:
@@ -212,7 +223,12 @@ if not args.stub:
         md.append("| %s | %s | %s | %s |\n" % (b["name"], b["avg_delay_min"], b["missed_connections"], b["overtime_min"]))
     md.append("\n- 3 輪內達成共識：%d / %d（%.0f%%）\n" % (consensus, n, 100 * consensus / n if n else 0))
     md.append("- 注入違規提案被規則層擋下：%s\n" % out["headline"]["injected_violations_blocked"])
-    md.append("- 零合法候選（no_safe_plan，不算進平均）：%d 場\n" % len(no_plan))
+    md.append("- 零合法候選（no_safe_plan，不算進平均）：%d 場；有合法選項但協商沒回方案：%d 場\n" % (len(no_plan), len(neg_failed)))
+    by_set = {}
+    for r in results:
+        if r["concord"] is not None and not r["no_legal"]:
+            by_set.setdefault(r["label"], []).append(r["fcfs"]["delay_min"] - r["concord"]["delay_min"])
+    md.append("- FCFS 和 Concord 的差距，按條件組拆開（分鐘，正數 = Concord 較好）：" + "；".join("%s %.1f" % (k, avg(v)) for k, v in by_set.items()) + "。差距主要來自登機口緊張的那組，因為 FCFS 不協調登機口就得在滑行道等。\n")
     md.append("- 平均每場 %.1f 秒、%.0f tokens\n" % (avg([r["elapsed_s"] for r in results]), avg([r["tokens"] for r in results])))
     md.append("\n## 失敗案例\n\n- row %s：%s\n- 發生了什麼：%s\n- 為什麼：%s\n- 怎麼修：%s\n" % (failure["row_id"], failure["summary"], failure["what_happened"], failure["why"], failure["fix"]))
     md.append("\n## 基準線怎麼算\n\n- FCFS（現狀）：塔台給最早安全的跑道時段（尾流、容量、油量），飛機去原登機口；門被佔就在滑行道等到門空出來，那段等待算進延誤。這模擬今天各部門只看自己資料、靠電話協調的情況。\n- Concord：三個 agent 協商後 Chief 定案的方案。\n- 全知最佳化：看得到所有資料，直接選合法候選裡軟成本最低的，是理論上限。\n\n## 限制\n\n- 登機口、油量、機組、轉機旅客、尾流等級是模擬的，由評審選的條件決定（`src/scenario.py`）。航班、延誤、原因、到達隊列是真的。\n- 只處理一班飛機，不處理連鎖影響。\n- 規則是簡化版：尾流用時間間隔代替海里，容量用真實到達量乘天氣係數，油量用分鐘數。見 `data/rules.json` 的 simplification。\n- 評估跑在我們自己的模擬器裡，基準線用同一套規則算。數字是相對比較，不是真實營運數據。\n- flights.csv 是 358,774 筆的子集，到達隊列密度約為真實的 6%%。\n")
