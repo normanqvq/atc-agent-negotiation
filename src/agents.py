@@ -19,6 +19,13 @@ from concurrent.futures import ThreadPoolExecutor
 
 from src import rules
 
+# read ANTHROPIC_API_KEY from a .env file too, so uvicorn and evaluate.py pick it up (.env is git-ignored)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 MODEL = "claude-haiku-5-5"
 MAX_TEXT = 120  # UI shows one short line per message (issue #3: <= 120 chars)
 
@@ -299,12 +306,6 @@ def ask_agents(world, candidates, round_no, chief_proposal):
 if __name__ == "__main__":
     from src.scenario import build_scenario
     from src.candidates import build_candidates
-
-    try:
-        from dotenv import load_dotenv
-        load_dotenv()
-    except ImportError:
-        pass
 
     world = build_scenario(1, {"weather": "thunderstorm", "runway": "single"})
     cands = build_candidates(world)
