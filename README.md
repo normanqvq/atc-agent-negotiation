@@ -23,80 +23,70 @@ arrival. **Status quo:** three phone calls and a guess.
 
 ## How the agents work together
 
-ATC is the chief. Pilot and Ground advise; ATC decides. But nobody, not even
-ATC, can pick an option that breaks a hard safety constraint, because those
-options are removed by plain rules before any agent sees them.
+The slogan: **the AI can argue, but it can't break the rules.**
 
 ```
-disruption (one row from the 2015 US DOT flight delay data)
+disruption: one real delayed arrival (2015 US DOT data) + the judge's conditions
         |
         v
-[rules] build the legal option set: runway slots x free gates
-        drop anything that breaks a hard constraint
-        (fuel minimum, wake separation, gate already occupied)
+[code]  build 5 candidate landing slots (time, gate, slow down / hold)
+        illegal ones are kept on purpose
         |
         v
-turn 1
-  ATC     picks a proposal from the legal set
-  Pilot   accept / counter, with reason
-  Ground  accept / counter, with reason
-  ATC     rules on the counters: keep own proposal, or adopt one
+round 1   ATC ranks, Pilot proposes, Ground proposes
+          (3 separate Haiku calls in parallel, each desk sees only its own data)
         |
         v
-both accept -> consensus, done
-otherwise   -> ATC's ruling becomes the turn 2 proposal
+[rules] every proposal is checked by plain Python: WAKE-01, CAP-01, FUEL-01, GATE-01
+        a proposal that breaks one is marked BLOCKED in front of everyone
         |
         v
-after turn 3 with no consensus -> ATC picks from the legal set, no more asking
+[Chief] code, not an LLM
+        all three on the same legal slot -> consensus, done
+        otherwise -> propose a compromise (weights ATC 3, Pilot 2, Ground 1)
         |
         v
-final plan + full negotiation log + "pending human controller confirmation"
+rounds 2-3  each desk accepts the Chief's proposal or counters
+        |
+        v
+no consensus after round 3 -> Chief picks the cheapest legal slot
+no legal slot at all       -> "no safe plan", hand to the duty manager
+        |
+        v
+plan + full log + trace, waiting for a human to approve or override
 ```
 
-Turn cap is fixed at 3. No open-ended agent chatter.
+| Desk | Sees only | Cares about |
+|---|---|---|
+| ATC (Tower) | arrival queue, wake categories, weather-reduced acceptance rate | runway flow, separation |
+| Pilot (Cockpit) | fuel endurance, crew duty time, connecting passengers | fuel margin, connections, landing early |
+| Ground (Ramp) | gate occupancy, ramp crew shift, next departure | free gate, crew overtime, next leg on time |
 
-| Agent | Role | Hard constraints (veto, enforced by rules) | Soft goals (negotiated) |
-|---|---|---|---|
-| ATC | chief, decides | wake separation, runway closure, taxiway blockage | sector throughput |
-| Pilot | advises | fuel below minimum reserve, flight safety | passenger connections, less turbulence |
-| Ground | advises | gate already occupied at that time | keep original gate, avoid crew overtime, short turnaround |
+**Two layers**
 
-**Two layers of priority**
-
-1. Hard constraints have no priority. Each one is a veto. They live in
-   `constraints.py` as pure functions and never go through an LLM.
-2. Soft goals are where the agents actually negotiate. When ATC rules on
-   counters it follows a fixed order: does the counter hurt runway
-   throughput? If not, Pilot's counter beats Ground's (passengers and fuel
-   margin over gate convenience).
+1. Hard rules (`src/rules.py`) are vetoes. Pure functions, no LLM, deterministic.
+   Sources and simplifications are in `data/rules.json`.
+2. Soft cost (delay, missed connections, crew overtime) is only used to choose
+   between legal slots. CONN-01 (connections) is a cost, never a veto.
 
 **Every message has the same shape**
 
 ```json
-{
-  "agent": "PILOT",
-  "turn": 1,
-  "action": "counter",
-  "proposal": {"new_arrival_time": "17:48", "gate": "B14", "route": "direct"},
-  "reason": "17:55 misses the 18:30 connection for 32 passengers",
-  "checks_passed": ["fuel_reserve", "wake_separation", "gate_free"],
-  "confidence": 0.82
-}
+{"id": "m2", "agent": "PILOT", "action": "propose", "candidate": 1,
+ "text": "Request 18:15 to protect 32 connecting passengers", "blocked_by": "CAP-01"}
 ```
 
-Actions are only `propose`, `accept`, `counter`, `reject`. No free text
-between agents.
+Actions: `rank`, `propose`, `accept`, `counter` (desks) and `propose`, `decide`
+(Chief). Agents can only point at a candidate id; they cannot invent times or gates.
 
 **LLM / non-LLM split**
 
-- Rules: every safety and operational check, and building the legal option
-  set. No AI.
-- Agents: choose between a small set of legal options. Rule-based by default.
-  Can plug in an LLM to write the `reason` line and a judgment model (Jev)
-  to pick between options with a confidence score. Low confidence falls back
-  to the rule-based choice.
-- Human in the loop: the final plan is a recommendation. The log shows what
-  Pilot and Ground objected to, so a human controller can overrule it.
+- Code: building candidates, every safety check, the Chief, the final pick.
+- LLM (`claude-haiku-5-5`): each desk's choice and its one-line reason.
+  Without a key, or if a call fails or is slow, that desk answers with a simple rule.
+- Human in the loop: the plan is a recommendation. Nothing happens until the
+  duty manager approves or overrides it, and every claim traces back to a
+  message or a rule check.
 
 ## Status
 

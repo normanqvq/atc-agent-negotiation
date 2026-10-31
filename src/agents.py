@@ -203,7 +203,9 @@ def get_client():
     global _client
     if _client is None:
         import anthropic
-        _client = anthropic.Anthropic(max_retries=1, timeout=30.0)
+        # demo on stage: a slow call should fall back to rules fast, not stall the UI.
+        # 15 s, no retry -> worst case about 45 s for 3 rounds
+        _client = anthropic.Anthropic(max_retries=0, timeout=15.0)
     return _client
 
 
