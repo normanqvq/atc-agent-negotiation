@@ -2,7 +2,7 @@
 
 > 每次 commit 都更新。Norman 的 Claude 用量滿了，隊友從「下一步」直接接著做。接手前先讀根目錄 `CLAUDE.md`。
 
-最後更新：10/31 12:00 · branch `ui-concord` · 做的人：Norman + Claude
+最後更新：10/31 12:20 · branch `ui-concord` · 做的人：Norman + Claude
 
 ## 怎麼跑
 
@@ -13,6 +13,11 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 已完成
 
+- [x] UI 第一版（branch ui-concord）：7 頁 deck（Title、Problem、How it works、Console、Evidence、Rules、Closing），鍵盤左右翻頁，淺色深色兩套主題
+- [x] Console：6 個環境維度按鈕 + 真實航班下拉 + Run；FlightStrip（REAL/SIM 標記）；到達隊列時間軸；三欄 agent 逐條顯示 + Chief 列；規則面板（紅色攔截）；決定卡（Approve / Override / Why 追溯 / Replay）
+- [x] 後端沒開時自動退回 `data/sample_log.json`，畫面標 REPLAY · backend offline；後端開了就 POST /api/run
+- [x] `data/rules.json`、`data/pool.json`（3 筆佔位，等 build_pool.py 換成真的）
+
 - [x] repo、README、MIT license、.gitignore、專案 CLAUDE.md
 - [x] `docs/PLAN.md`（舊版：agent 流程已改成 Chief 協調器，接口那段待更新）
 - [x] `data/sample_log.json`、`data/sample_eval.json` 合約
@@ -21,14 +26,14 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 進行中
 
-- [ ] UI deck + demo console（Norman + Claude，現在在做）
+- [ ] UI 審查中（subagent），之後 merge 回 main
 
 ## 下一步（按順序，誰接手就從第一個沒打勾的開始）
 
-1. [ ] `ui/src/style.css` 設計 token（兩套主題）
-2. [ ] `ui/src/App.jsx` deck 骨架：7 頁，鍵盤左右翻頁
-3. [ ] demo console 元件：ScenarioPicker → FlightStrip → AgentColumns → RuleChecks → DecisionCard，先讀 `data/sample_log.json`
-4. [ ] 評估頁讀 `data/sample_eval.json`，規則頁讀 `data/rules.json`
+1. [x] `ui/src/style.css` 設計 token（兩套主題）
+2. [x] `ui/src/App.jsx` deck 骨架：7 頁，鍵盤左右翻頁
+3. [x] demo console 元件
+4. [x] 評估頁讀 `data/sample_eval.json`，規則頁讀 `data/rules.json`
 5. [ ] `scripts/build_pool.py`：flights.csv → `data/pool.json`（20 筆 ATL 到達，WEATHER_DELAY>15 或 LATE_AIRCRAFT_DELAY>20，附同日前後一小時到達隊列）
 6. [ ] `data/rules.json` 四條規則 + 出處
 7. [ ] 後端 `src/api.py`（FastAPI）`POST /api/run` 先回 sample_log.json，再逐步換成真的
@@ -39,7 +44,9 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 卡住的 / 要問的
 
-- 無
+- Title 頁要填隊員名字（`ui/src/slides/Title.jsx`）
+- Problem 頁的三個數字：70% 來自題目 PDF，另外兩個是估算，要找 mentor 核實或改掉
+- Chrome 擴充套件打不開 localhost，截圖驗證沒做成，自己開 http://localhost:5173 看
 
 ## 合約變更紀錄
 
