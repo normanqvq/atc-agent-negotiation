@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import sampleLog from '../../../data/sample_log.json'
-import poolFile from '../../../data/pool.json'
-import ScenarioPicker, { DIMENSIONS, defaultEnvironment, labelFor } from './ScenarioPicker.jsx'
+import { DIMENSIONS, labelFor, envSummary } from '../lib/scenario.js'
 import FlightStrip from './FlightStrip.jsx'
 import QueueTimeline from './QueueTimeline.jsx'
 import AgentColumns from './AgentColumns.jsx'
@@ -10,7 +9,6 @@ import DecisionCard from './DecisionCard.jsx'
 import Rulebook from './Rulebook.jsx'
 import useReveal from './useReveal.js'
 
-const pool = poolFile.flights
 const TIMEOUT_MS = 25000
 
 // does the backend's answer have everything the screen reads?
@@ -32,17 +30,29 @@ function fakeLog(env) {
   return log
 }
 
-export default function Console() {
-  const [env, setEnv] = useState(defaultEnvironment())
-  const [poolIndex, setPoolIndex] = useState(pool[0] ? pool[0].pool_index : 1)
+// page 3: only the simulation. the judge's choices come from the setup page (App holds them).
+// runId goes up each time "Run negotiation" is pressed there.
+export default function Console({ env, poolIndex, runId, onRun, onSetup }) {
+  const [ranWith, setRanWith] = useState('') // conditions of the run on screen, for the top bar
   const [log, setLog] = useState(null)
   const [running, setRunning] = useState(false)
   const [runKey, setRunKey] = useState(0)
   const [showRules, setShowRules] = useState(false)
   const { n, done } = useReveal(log, runKey)
+  const mainRef = useRef(null)
+
+  // the page never scrolls, the main column does: follow the newest message like a chat.
+  // a new run or replay (n back to 0) jumps back to the top.
+  useEffect(() => {
+    const el = mainRef.current
+    if (!el) return
+    if (n === 0) el.scrollTo({ top: 0 })
+    else el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  }, [n])
 
   async function run() {
     setRunning(true)
+    setRanWith(envSummary(env))
     let result = null
     const ctrl = new AbortController()
     const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS)
@@ -67,8 +77,8 @@ export default function Console() {
     setRunning(false)
   }
 
-  // run once on load so the three desks are talking the moment the page opens
-  useEffect(() => { run() }, [])
+  // start a run whenever the setup page asks for one (not on page load)
+  useEffect(() => { if (runId > 0) run() }, [runId])
 
   const revealedIds = new Set()
   const blockedIds = new Set()
@@ -84,61 +94,79 @@ export default function Console() {
   }
   const meta = (log && log.meta) || {}
 
-  return (
-    <section className="slide slide--wide slide--top slide--console">
-      <div className="slide-inner">
-        <div className="topbar">
-          <span className="wordmark">CONCORD</span>
-          <div className="legend">
-            <span className="l-llm">LLM</span><span className="l-code">code</span><span className="l-human">human</span>
-          </div>
-          <button className="btn btn--ghost btn--sm" onClick={() => setShowRules(s => !s)}>{showRules ? 'Hide rulebook' : 'Rulebook'}</button>
-          {log && (
-            <div className="meta">
-              <span>{meta.model || 'claude-haiku-5-5'}</span>
-              {meta.elapsed_s !== undefined && <span>{meta.elapsed_s}s · {meta.tokens} tokens</span>}
-              {meta.ai_enabled === false && <span className="warn">AI OFF · chief fallback</span>}
-              <span className={meta.source === 'sample' ? 'warn' : ''}>
-                {meta.source === 'sample' ? 'REPLAY · backend offline · sample flight' : 'LIVE'}
-              </span>
-            </div>
-          )}
-        </div>
+  // how many rounds have started so far, for the progress bar in the waiting card
+  let roundsSeen = 0
+  if (log) {
+    let k = 0
+    for (const r of log.rounds) { if (k < n) roundsSeen = r.round; k += r.messages.length }
+  }
 
-        <ScenarioPicker
-          env={env} onEnv={setEnv}
-          pool={pool} poolIndex={poolIndex} onPoolIndex={setPoolIndex}
-          onRun={run} running={running}
-        />
+  return (
+    <section className="slide slide--console">
+      <div className="slide-inner">
+        <h2 className="sr-only">Live negotiation console</h2>
+        <div className="topbar">
+          <span className="wordmark"><i />Concord</span>
+          {(log || running) && <span className="ran-with">{ranWith}</span>}
+          <div className="meta">
+            {log && !running && (meta.source === 'sample'
+              ? <span className="status status--replay"><i />Replay · backend offline, sample flight</span>
+              : <span className="status"><i />Live · <span className="mono">{meta.model || 'claude-haiku-5-5'}</span>{meta.elapsed_s !== undefined && <span className="mono"> · {meta.elapsed_s}s</span>}</span>)}
+            {log && !running && meta.ai_enabled === false && <span className="status status--off"><i />AI off · chief fallback</span>}
+            <button className="btn btn--ghost btn--sm" aria-pressed={showRules} onClick={() => setShowRules(s => !s)}>
+              {showRules ? 'Hide rulebook' : 'Rulebook'}
+            </button>
+            <button className="btn btn--ghost btn--sm" onClick={onSetup}>Change conditions</button>
+          </div>
+        </div>
 
         {showRules && <Rulebook onClose={() => setShowRules(false)} />}
 
-        {running && (
-          <div className="panel running">
-            <div className="typing"><i /><i /><i /></div>
-            <p>Building candidates, running the rulebook, calling ATC · Pilot · Ground…</p>
+        {!log && !running && (
+          <div className="panel console-empty">
+            <h3>Nothing is running yet</h3>
+            <p>Set the weather, runways and the rest, pick a real delayed flight, then run the negotiation.</p>
+            <div className="btn-row">
+              <button className="btn" onClick={onSetup}>Set the conditions</button>
+              <button className="btn btn--ghost" onClick={onRun}>Run with normal conditions</button>
+            </div>
           </div>
         )}
 
-        {log && <FlightStrip scenario={log.scenario} />}
-        {log && (
-          <QueueTimeline
-            queue={{ ...log.arrival_queue, airport: log.scenario.destination }}
-            subject={log.scenario}
-            candidates={log.candidates}
-            decision={done ? log.decision : null}
-            blockedIds={blockedIds}
-          />
-        )}
+        {(log || running) && (
+          <div className="console-grid">
+            <div className="console-main" ref={mainRef}>
+              {log && !running && <FlightStrip scenario={log.scenario} />}
+              {log && !running && (
+                <QueueTimeline
+                  queue={{ ...log.arrival_queue, airport: log.scenario.destination }}
+                  subject={log.scenario}
+                  candidates={log.candidates}
+                  decision={done ? log.decision : null}
+                  blockedIds={blockedIds}
+                />
+              )}
+              {log && !running
+                ? <AgentColumns log={log} revealed={n} />
+                : <div className="panel"><p className="board-empty">Building candidates, running the rulebook, calling ATC · Pilot · Ground…</p></div>}
+            </div>
 
-        {log && <AgentColumns log={log} revealed={n} />}
-
-        {log && (
-          <div className="bottom">
-            <RuleChecks checks={log.rule_checks} revealedIds={revealedIds} done={done} />
-            {done
-              ? <DecisionCard key={runKey} decision={log.decision} onReplay={() => setRunKey(k => k + 1)} />
-              : <div className="panel decision-wait"><p className="muted">Decision appears when the desks agree, or after round 3 the Chief decides.</p></div>}
+            <aside className="console-rail" aria-label="Decision and rule checks">
+              {log && done && !running
+                ? <DecisionCard key={runKey} decision={log.decision} onReplay={() => setRunKey(k => k + 1)} />
+                : (
+                  <div className="panel decision-wait" aria-live="polite">
+                    <div className="panel-title"><h3>Decision</h3><span className="note">a human signs</span></div>
+                    <p>{running
+                      ? 'Negotiating. The desks are getting their first look at the options.'
+                      : `Round ${roundsSeen || 1} of max 3. The plan appears when all three desks agree, or the Chief decides after round 3.`}</p>
+                    <div className="progress" aria-hidden="true">
+                      {[1, 2, 3].map(i => <i key={i} className={!running && i <= roundsSeen ? 'on' : ''} />)}
+                    </div>
+                  </div>
+                )}
+              {log && !running && <RuleChecks checks={log.rule_checks} revealedIds={revealedIds} done={done} />}
+            </aside>
           </div>
         )}
       </div>

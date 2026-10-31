@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import Icon from '../Icon.jsx'
 
 // flash whatever the trace chip points at (a message, a rule, or the data row)
 function highlight(id) {
@@ -20,7 +21,10 @@ export default function DecisionCard({ decision, onReplay }) {
 
   if (!decision) return null
   const none = decision.status === 'no_safe_plan'
-  const cls = 'panel decision' + (state === 'approved' ? ' decision--approved' : '') + (none ? ' decision--none' : '')
+  const cls = 'panel decision'
+    + (state === 'approved' ? ' decision--approved' : '')
+    + (state === 'override' ? ' decision--override' : '')
+    + (none ? ' decision--none' : '')
 
   function sign(next) {
     setState(next)
@@ -28,22 +32,23 @@ export default function DecisionCard({ decision, onReplay }) {
   }
 
   return (
-    <div className={cls} ref={ref}>
+    <div className={cls} ref={ref} aria-live="polite">
       <div className="panel-title">
         <h3>{none ? 'No safe plan found' : 'Recommended plan'}</h3>
-        <span className="who who--human">human decides</span>
+        {state === 'pending' && <span className="stamp stamp--pending">Awaiting duty manager</span>}
+        {state === 'approved' && <span className="stamp stamp--approved">Approved {stamp}</span>}
+        {state === 'override' && <span className="stamp stamp--override">Overridden {stamp} · logged</span>}
       </div>
       <p className="summary">{decision.summary}</p>
-      <div className="line">
-        {!none && <span>Agreed in round {decision.agreed_in_round} · {String(decision.decided_by || '').replace('_', ' ')}</span>}
-        {state === 'pending' && <span className="pill pill--pending">pending duty manager confirmation</span>}
-        {state === 'approved' && <span className="pill pill--approved">approved {stamp}</span>}
-        {state === 'override' && <span className="pill pill--override">overridden {stamp} · logged</span>}
-      </div>
+      {!none && (
+        <div className="line">
+          <span>Agreed in round {decision.agreed_in_round} · {String(decision.decided_by || '').replace('_', ' ')}</span>
+        </div>
+      )}
       <div className="btn-row">
-        {state === 'pending' && !none && <button className="btn btn--human" onClick={() => sign('approved')}>Approve</button>}
+        {state === 'pending' && !none && <button className="btn btn--human" onClick={() => sign('approved')}><Icon name="check" />Approve</button>}
         {state === 'pending' && <button className="btn btn--ghost" onClick={() => sign('override')}>Override</button>}
-        <button className="btn btn--ghost" onClick={() => setWhy(w => !w)}>{why ? 'Hide why' : 'Why?'}</button>
+        <button className="btn btn--ghost" aria-expanded={why} onClick={() => setWhy(w => !w)}>{why ? 'Hide why' : 'Why this plan?'}</button>
         <button className="btn btn--ghost" onClick={onReplay}>Replay</button>
       </div>
       {why && decision.trace && (
@@ -54,7 +59,7 @@ export default function DecisionCard({ decision, onReplay }) {
               {t.links.map((l, j) => <button key={l + j} className="link-chip" onClick={() => highlight(l)}>{l}</button>)}
             </div>
           ))}
-          <p className="muted" style={{ fontSize: 12 }}>Click a chip to jump to the message, rule or data row it came from.</p>
+          <p className="hint">Click a reference to jump to the message, rule or data row it came from.</p>
         </div>
       )}
     </div>

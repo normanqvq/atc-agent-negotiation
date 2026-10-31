@@ -6,7 +6,7 @@ export default function Rulebook({ onClose }) {
     <div className="panel">
       <div className="panel-title">
         <h3>Rulebook · all in code, none in a prompt</h3>
-        <button className="btn btn--ghost" onClick={onClose}>Close</button>
+        <button className="btn btn--ghost btn--sm" onClick={onClose}>Close</button>
       </div>
       <div className="tbl-wrap">
         <table className="tbl">
@@ -14,10 +14,10 @@ export default function Rulebook({ onClose }) {
           <tbody>
             {rulesFile.rules.map(r => (
               <tr key={r.id}>
-                <td className="mono">{r.id}</td>
+                <td>{r.kind === 'hard' ? <span className="sign sign--stop">{r.id}</span> : <span className="rid mono">{r.id}</span>}</td>
                 <td><b>{r.name}</b><br />{r.rule}</td>
                 <td>{r.kind === 'hard' ? 'Hard · veto' : 'Soft · cost'}</td>
-                <td>{r.source}{r.assumed && <span className="chip chip--sim" style={{ marginLeft: 6 }}>assumed</span>}</td>
+                <td>{r.source}{r.assumed && <> <span className="tag tag--sim">assumed</span></>}</td>
                 <td className="muted">{r.simplification}</td>
               </tr>
             ))}

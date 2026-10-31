@@ -1,15 +1,17 @@
 import { toMin, fmt } from '../lib/time.js'
 
 // the real arrival queue on a time axis, candidate slots underneath.
-// flights are spread over 3 lanes so a busy 5 minutes stays readable.
+// lane 0 = the subject flight only. other flights spread over lanes 1-3 so a busy 5 minutes stays readable.
+// the subject flight shows twice: a ghost at its scheduled time, a sign at its ETA, red line = the delay.
 export default function QueueTimeline({ queue, subject, candidates, decision, blockedIds }) {
-  const flights = (queue.flights || []).filter(f => f.sched_arrival)
-  const eta = subject && subject.scheduled_arrival ? toMin(subject.scheduled_arrival) + (subject.delay_min || 0) : null
+  const flights = (queue.flights || []).filter(f => f.sched_arrival && !f.is_subject)
+  const sta = subject && subject.scheduled_arrival ? toMin(subject.scheduled_arrival) : null
+  const eta = sta !== null ? sta + (subject.delay_min || 0) : null
   const times = [
     ...flights.map(f => toMin(f.sched_arrival)),
     ...candidates.filter(c => c.arrival).map(c => toMin(c.arrival)),
   ]
-  if (eta !== null) times.push(eta)
+  if (eta !== null) times.push(eta, sta)
   if (times.length === 0) return null
   const start = Math.floor((Math.min(...times) - 10) / 10) * 10
   const end = Math.ceil((Math.max(...times) + 10) / 10) * 10
@@ -19,29 +21,36 @@ export default function QueueTimeline({ queue, subject, candidates, decision, bl
 
   const ticks = []
   for (let t = start; t <= end; t += step) ticks.push(t)
+  const chosenId = decision ? decision.candidate : null
 
   return (
     <div className="panel">
       <div className="panel-title">
-        <h3>Arrival queue at {queue.airport || 'ATL'}</h3>
-        <span className="who who--code">real same-day arrivals · wake category SIM · H = heavy</span>
+        <h3>Arrival queue · {queue.airport || 'ATL'}</h3>
+        <span className="note">Real same-day arrivals · wake category simulated · H = heavy</span>
       </div>
-      <div className="timeline" aria-label="Arrival timeline">
+      <div className="timeline" role="img" aria-label={`Arrival timeline from ${fmt(start)} to ${fmt(end)} with ${candidates.length} candidate slots`}>
         <div className="axis" />
+        {eta !== null && eta > sta && <div className="late" style={{ left: pct(sta) + '%', width: (pct(eta) - pct(sta)) + '%' }} />}
         {ticks.map(t => <div className="tick" key={t} style={{ left: pct(t) + '%' }}><span>{fmt(t)}</span></div>)}
         {flights.map((f, i) => (
-          <div key={f.flight + i} className={'fl lane' + (i % 3) + ' ' + f.wake_category}
-            style={{ left: pct(toMin(f.sched_arrival)) + '%' }} title={f.wake_category}>
+          <div key={f.flight + i} className={'fl lane' + (i % 3 + 1) + ' ' + f.wake_category}
+            style={{ left: pct(toMin(f.sched_arrival)) + '%' }} title={`${f.flight} ${f.sched_arrival} ${f.wake_category}`}>
             {f.flight}{f.wake_category === 'heavy' ? ' H' : ''}
           </div>
         ))}
+        {sta !== null && eta - sta >= 12 && (
+          <div className="fl sta lane0" style={{ left: pct(sta) + '%' }} title="subject flight, scheduled">
+            {subject.flight} STA
+          </div>
+        )}
         {eta !== null && (
           <div className="fl subject lane0" style={{ left: pct(eta) + '%' }} title="subject flight, scheduled + delay">
             {subject.flight} ETA {fmt(eta)}
           </div>
         )}
         {candidates.filter(c => c.arrival).map(c => {
-          const chosen = decision && decision.candidate === c.id
+          const chosen = chosenId === c.id
           const blocked = blockedIds.has(c.id)
           return (
             <div key={c.id} className={'cand' + (chosen ? ' chosen' : '') + (blocked ? ' blocked' : '')}
@@ -51,12 +60,17 @@ export default function QueueTimeline({ queue, subject, candidates, decision, bl
           )
         })}
       </div>
-      <div className="chips">
-        {candidates.map(c => (
-          <span key={c.id} className={'chip' + (blockedIds.has(c.id) ? ' chip--sim' : '')}>
-            #{c.id} {c.arrival} · {c.gate} · {String(c.mode || '').replace('_', ' ')}{c.note ? ' · ' + c.note : ''}
-          </span>
-        ))}
+      <div className="cands">
+        {candidates.map(c => {
+          const blocked = blockedIds.has(c.id)
+          const chosen = chosenId === c.id
+          return (
+            <span key={c.id} className={'cand-chip' + (blocked ? ' cand-chip--blocked' : '') + (chosen ? ' cand-chip--chosen' : '')}>
+              <b>#{c.id}</b>
+              <span className="mono">{c.arrival}</span> {c.gate} · {String(c.mode || '').replace('_', ' ')}{c.note ? ' · ' + c.note : ''}
+            </span>
+          )
+        })}
       </div>
     </div>
   )

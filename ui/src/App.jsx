@@ -1,25 +1,35 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Intro from './slides/Intro.jsx'
+import Setup from './slides/Setup.jsx'
 import Console from './console/Console.jsx'
 import Evidence from './slides/Evidence.jsx'
 import ErrorBoundary from './ErrorBoundary.jsx'
+import Icon from './Icon.jsx'
+import poolFile from '../../data/pool.json'
+import { defaultEnvironment } from './lib/scenario.js'
 
-// three pages: the pitch, the live console, the evidence
-const slides = [Intro, Console, Evidence]
+// four pages, shown one at a time like a PPT: the pitch, set the conditions, the live console, the evidence
+const slides = [Intro, Setup, Console, Evidence]
+const SETUP = 1
+const CONSOLE = 2
+
+// every page is laid out on a fixed 16:9 stage, then scaled to fit the screen.
+// so it looks the same on a laptop and on the projector.
+const STAGE_W = 1600
+const STAGE_H = 900
 
 export default function App() {
-  const deckRef = useRef(null)
-  const targetRef = useRef(null) // slide we are smooth-scrolling to, if any
   const [idx, setIdx] = useState(0)
   const [theme, setTheme] = useState('') // '' = follow system
+  const [scale, setScale] = useState(1)
+
+  // the judge's choices live here so the setup page and the console share them
+  const [env, setEnv] = useState(defaultEnvironment())
+  const [poolIndex, setPoolIndex] = useState(poolFile.flights[0] ? poolFile.flights[0].pool_index : 1)
+  const [runId, setRunId] = useState(0) // goes up by one each time "Run negotiation" is pressed
 
   function goTo(i) {
-    const deck = deckRef.current
-    if (!deck) return
-    const next = Math.max(0, Math.min(slides.length - 1, i))
-    targetRef.current = next
-    deck.children[next].scrollIntoView({ block: 'start', behavior: 'smooth' })
-    setIdx(next)
+    setIdx(Math.max(0, Math.min(slides.length - 1, i)))
   }
 
   // arrow keys flip pages, unless the judge is using a form control
@@ -27,6 +37,7 @@ export default function App() {
     function onKey(e) {
       const tag = document.activeElement && document.activeElement.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+      if (tag === 'BUTTON' && (e.key === ' ' || e.key === 'Enter')) return // let the button click
       if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goTo(idx + 1) }
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(idx - 1) }
     }
@@ -34,24 +45,14 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [idx])
 
-  // keep the counter right when the user scrolls by hand
+  // scale the stage to the biggest 16:9 box that fits the window
   useEffect(() => {
-    const deck = deckRef.current
-    function onScroll() {
-      // still gliding towards a target? leave idx alone until we get there
-      const t = targetRef.current
-      if (t !== null) {
-        if (Math.abs(deck.scrollTop - deck.children[t].offsetTop) > 4) return
-        targetRef.current = null
-      }
-      let cur = 0
-      for (let i = 0; i < deck.children.length; i++) {
-        if (deck.children[i].offsetTop <= deck.scrollTop + 40) cur = i
-      }
-      setIdx(cur)
+    function fit() {
+      setScale(Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H))
     }
-    deck.addEventListener('scroll', onScroll, { passive: true })
-    return () => deck.removeEventListener('scroll', onScroll)
+    fit()
+    window.addEventListener('resize', fit)
+    return () => window.removeEventListener('resize', fit)
   }, [])
 
   useEffect(() => {
@@ -66,17 +67,35 @@ export default function App() {
     setTheme(cur === 'dark' ? 'light' : 'dark')
   }
 
+  function startRun() {
+    setRunId(r => r + 1)
+    goTo(CONSOLE)
+  }
+
+  const shared = {
+    env, onEnv: setEnv,
+    poolIndex, onPoolIndex: setPoolIndex,
+    runId, onRun: startRun,
+    onSetup: () => goTo(SETUP),
+  }
+
   return (
-    <>
-      <div className="deck" ref={deckRef}>
-        {slides.map((Slide, i) => <ErrorBoundary key={i}><Slide /></ErrorBoundary>)}
+    <div className="viewport">
+      <div className="stage" style={{ width: STAGE_W, height: STAGE_H, transform: `translate(-50%, -50%) scale(${scale})` }}>
+        {/* all pages stay mounted (so the console keeps its run), only the current one is visible */}
+        {slides.map((Slide, i) => (
+          <div key={i} className={'page' + (i === idx ? ' page--on' : '')}
+            aria-hidden={i !== idx} inert={i !== idx ? '' : undefined}>
+            <ErrorBoundary><Slide onNext={() => goTo(i + 1)} {...shared} /></ErrorBoundary>
+          </div>
+        ))}
+        <nav className="nav" aria-label="Page navigation">
+          <span className="num">{idx + 1} / {slides.length}</span>
+          <button onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous page"><Icon name="left" /></button>
+          <button onClick={() => goTo(idx + 1)} disabled={idx === slides.length - 1} aria-label="Next page"><Icon name="right" /></button>
+          <button onClick={toggleTheme} aria-label="Toggle light or dark theme" title="Light / dark"><Icon name="theme" /></button>
+        </nav>
       </div>
-      <div className="nav" aria-label="Page navigation">
-        <span className="num">{idx + 1} / {slides.length}</span>
-        <button onClick={() => goTo(idx - 1)} aria-label="Previous page">‹</button>
-        <button onClick={() => goTo(idx + 1)} aria-label="Next page">›</button>
-        <button onClick={toggleTheme} aria-label="Toggle light or dark theme">◐</button>
-      </div>
-    </>
+    </div>
   )
 }

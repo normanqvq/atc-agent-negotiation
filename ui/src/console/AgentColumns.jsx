@@ -1,7 +1,9 @@
+import Icon from '../Icon.jsx'
+
 const ORDER = ['ATC', 'PILOT', 'GROUND']
 
-// three desks side by side. each desk gets its own tall column and the chief's
-// ruling spans all three at the end of each round.
+// the negotiation board. desks across the top, rounds going down.
+// each round = one row of three cells, then the chief's ruling once, across all three desks.
 export default function AgentColumns({ log, revealed }) {
   let k = 0
   const rounds = log.rounds.map(r => ({
@@ -10,33 +12,48 @@ export default function AgentColumns({ log, revealed }) {
   }))
   const total = k
 
-  // which agent is "speaking" next, to show a typing dot in that desk
-  let nextAgent = null
-  for (const r of rounds) for (const m of r.messages) if (m.idx === revealed) nextAgent = m.agent
+  // who speaks next, so we can show a placeholder in their cell
+  let next = null
+  for (const r of rounds) for (const m of r.messages) if (m.idx === revealed) next = { agent: m.agent, round: r.round }
+  if (revealed >= total) next = null
 
   return (
-    <div className="desks">
-      {ORDER.map(a => {
-        const items = []
-        for (const r of rounds) {
-          for (const m of r.messages) {
-            if (m.agent !== a || m.idx >= revealed) continue
-            items.push(<Message key={m.id} m={m} round={r.round} />)
-          }
-          // chief ruling for this round, repeated in each desk so every desk "receives" it
-          const chief = r.messages.find(m => m.agent === 'CHIEF' && m.idx < revealed)
-          if (chief) items.push(<Chief key={chief.id + a} m={chief} round={r.round} first={a === 'ATC'} />)
-        }
+    <div className="board">
+      <div className="board-head">
+        {ORDER.map(a => {
+          const active = next && next.agent === a
+          return (
+            <div className={'desk-head' + (active ? ' desk-head--active' : '')} key={a}>
+              <h3>{log.agents[a].label} {active && <span className="speaking">drafting…</span>}</h3>
+              <p className="sees">Sees only: {log.agents[a].sees}</p>
+            </div>
+          )
+        })}
+      </div>
+
+      {rounds.map(r => {
+        const shown = r.messages.filter(m => m.idx < revealed)
+        const nextHere = next && next.round === r.round
+        if (shown.length === 0 && !nextHere) return null
+        const chiefs = shown.filter(m => m.agent === 'CHIEF')
         return (
-          <div className={'desk' + (nextAgent === a ? ' desk--active' : '')} key={a}>
-            <div className="desk-head">
-              <h3>{log.agents[a].label}</h3>
-              <p className="sees"><b>sees only:</b> {log.agents[a].sees}</p>
+          <div className="round" key={r.round}>
+            <div className="round-label">Round {r.round}</div>
+            <div className="round-row">
+              {ORDER.map(a => {
+                const mine = shown.filter(m => m.agent === a)
+                const pending = nextHere && next.agent === a
+                if (mine.length === 0 && !pending) return <div className="cell" key={a} />
+                return (
+                  <div className="cell" key={a}>
+                    {mine.map(m => <Message key={m.id} m={m} agentLabel={log.agents[a].label} />)}
+                    {pending && <Pending />}
+                  </div>
+                )
+              })}
             </div>
-            <div className="desk-body">
-              {items}
-              {nextAgent === a && revealed < total && <div className="typing" aria-label="thinking"><i /><i /><i /></div>}
-            </div>
+            {chiefs.map(m => <Chief key={m.id} m={m} />)}
+            {nextHere && next.agent === 'CHIEF' && <div className="chief chief--pending">Chief is checking the replies against the rulebook…</div>}
           </div>
         )
       })}
@@ -44,22 +61,41 @@ export default function AgentColumns({ log, revealed }) {
   )
 }
 
-function Message({ m, round }) {
+function Message({ m, agentLabel }) {
   return (
     <div className={'msg' + (m.blocked_by ? ' msg--blocked' : '')} id={'msg-' + m.id}>
-      <span className="tag">R{round} · {m.action} {m.candidate ? <b>#{m.candidate}</b> : null}</span>
+      <div className="msg-top">
+        <span className="agent">{agentLabel}</span>
+        <span className="act">{m.action}</span>
+        {m.candidate ? <span className="ref">#{m.candidate}</span> : null}
+      </div>
       <p>{m.text}</p>
-      {m.blocked_by && <span className="block">✗ BLOCKED · {m.blocked_by}</span>}
+      {m.blocked_by && (
+        <div className="msg-block">
+          <span className="sign sign--stop"><Icon name="x" />{m.blocked_by}</span>
+          Blocked by the rulebook
+        </div>
+      )}
     </div>
   )
 }
 
-function Chief({ m, round, first }) {
-  // only the first copy carries the DOM id, so trace links land somewhere
+// placeholder while the next desk "thinks"
+function Pending() {
   return (
-    <div className="chief" id={first ? 'msg-' + m.id : undefined}>
-      <span className="tag">R{round} · Chief</span>
-      <p>{m.text}{m.candidate ? <b className="mono"> #{m.candidate}</b> : null}</p>
+    <div className="msg msg--pending" aria-label="drafting">
+      <div className="skeleton" />
+      <div className="skeleton skeleton--short" />
+    </div>
+  )
+}
+
+function Chief({ m }) {
+  return (
+    <div className="chief" id={'msg-' + m.id}>
+      <span className="who">Chief · code</span>
+      <p>{m.text}</p>
+      {m.candidate ? <span className="ref">#{m.candidate}</span> : null}
     </div>
   )
 }
