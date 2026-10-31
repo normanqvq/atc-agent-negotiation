@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import Intro from './slides/Intro.jsx'
 import Console from './console/Console.jsx'
 import Evidence from './slides/Evidence.jsx'
+import ErrorBoundary from './ErrorBoundary.jsx'
 
 // three pages: the pitch, the live console, the evidence
 const slides = [Intro, Console, Evidence]
 
 export default function App() {
   const deckRef = useRef(null)
+  const targetRef = useRef(null) // slide we are smooth-scrolling to, if any
   const [idx, setIdx] = useState(0)
   const [theme, setTheme] = useState('') // '' = follow system
 
@@ -15,6 +17,7 @@ export default function App() {
     const deck = deckRef.current
     if (!deck) return
     const next = Math.max(0, Math.min(slides.length - 1, i))
+    targetRef.current = next
     deck.children[next].scrollIntoView({ block: 'start', behavior: 'smooth' })
     setIdx(next)
   }
@@ -24,7 +27,7 @@ export default function App() {
     function onKey(e) {
       const tag = document.activeElement && document.activeElement.tagName
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
-      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); goTo(idx + 1) }
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); goTo(idx + 1) }
       if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); goTo(idx - 1) }
     }
     window.addEventListener('keydown', onKey)
@@ -35,6 +38,12 @@ export default function App() {
   useEffect(() => {
     const deck = deckRef.current
     function onScroll() {
+      // still gliding towards a target? leave idx alone until we get there
+      const t = targetRef.current
+      if (t !== null) {
+        if (Math.abs(deck.scrollTop - deck.children[t].offsetTop) > 4) return
+        targetRef.current = null
+      }
       let cur = 0
       for (let i = 0; i < deck.children.length; i++) {
         if (deck.children[i].offsetTop <= deck.scrollTop + 40) cur = i
@@ -60,7 +69,7 @@ export default function App() {
   return (
     <>
       <div className="deck" ref={deckRef}>
-        {slides.map((Slide, i) => <Slide key={i} />)}
+        {slides.map((Slide, i) => <ErrorBoundary key={i}><Slide /></ErrorBoundary>)}
       </div>
       <div className="nav" aria-label="Page navigation">
         <span className="num">{idx + 1} / {slides.length}</span>

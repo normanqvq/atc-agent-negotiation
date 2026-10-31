@@ -17,8 +17,8 @@ export default function Evidence() {
             <p className="muted">injected unsafe proposals blocked by the rule layer</p>
           </div>
           <div className="card">
-            <span className="big num">{h.delay_vs_fcfs_min} min</span>
-            <p className="muted">average delay vs first come, first served</p>
+            <span className="big num">{Math.abs(h.delay_vs_fcfs_min)} min</span>
+            <p className="muted">{h.delay_vs_fcfs_min < 0 ? 'less' : 'more'} average delay than first come, first served</p>
           </div>
         </div>
         <div className="two">

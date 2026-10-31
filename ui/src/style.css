@@ -4,8 +4,6 @@
    Colour encodes who does the work: amber = LLM agents, blue = code (chief, rules),
    green = human. Red = blocked by a rule. */
 
-@import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
-
 :root {
   --bg: #F3F6FA;
   --surface: #FFFFFF;
@@ -73,7 +71,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 }
 .slide-inner { width: min(1100px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 .slide--wide .slide-inner { width: min(1500px, 100%); }
-.slide--top { justify-content: flex-start; }
+.slide--top { justify-content: flex-start; scroll-snap-align: none; }
 
 .eyebrow {
   font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
@@ -151,6 +149,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .bottom { display: grid; gap: 12px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }
 @media (max-width: 900px) { .bottom { grid-template-columns: 1fr; } }
 .decision-wait { justify-content: center; }
+.running { flex-direction: row; align-items: center; gap: 12px; border-color: var(--llm); }
+.running p { font-size: 14px; }
 
 .topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
 .wordmark { font-family: var(--f-display); font-weight: 800; font-size: 22px; letter-spacing: .08em; }
@@ -174,7 +174,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .pool-select select { flex: 1; min-width: 0; font: inherit; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
 .btn {
   border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 700; font-family: var(--f-display); letter-spacing: .02em;
-  background: var(--accent); color: #fff;
+  background: var(--accent); color: var(--bg);
 }
 .btn:disabled { opacity: .55; cursor: wait; }
 .btn--ghost { background: var(--surface-2); color: var(--ink); }
@@ -182,7 +182,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .btn--crit { background: var(--crit); }
 .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 12px; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.chip { font-size: 12px; padding: 3px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
 .chip--real { background: var(--accent-soft); color: var(--accent); }
 .chip--sim { background: var(--llm-soft); color: var(--llm); }
 .chip--env { background: var(--surface-2); }
@@ -197,16 +197,21 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .strip-cell--delay b { color: var(--crit); }
 
 /* queue timeline */
-.timeline { position: relative; height: 78px; margin-top: 2px; }
-.timeline .axis { position: absolute; left: 0; right: 0; top: 46px; height: 1px; background: var(--line); }
-.timeline .tick { position: absolute; top: 42px; width: 1px; height: 9px; background: var(--line); }
+.timeline { position: relative; height: 128px; margin-top: 2px; }
+.timeline .axis { position: absolute; left: 0; right: 0; top: 78px; height: 1px; background: var(--line); }
+.timeline .tick { position: absolute; top: 74px; width: 1px; height: 9px; background: var(--line); }
 .timeline .tick span { position: absolute; top: 12px; left: 0; transform: translateX(-50%); font-family: var(--f-mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
-.timeline .fl { position: absolute; top: 6px; transform: translateX(-50%); font-family: var(--f-mono); font-size: 11px; padding: 3px 6px; border-radius: 4px; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.timeline .fl { position: absolute; transform: translateX(-50%); font-family: var(--f-mono); font-size: 11px; padding: 2px 6px; border-radius: 4px; background: var(--surface-2); color: var(--ink); white-space: nowrap; line-height: 1.4; }
+.timeline .fl.lane0 { top: 2px; } .timeline .fl.lane1 { top: 24px; } .timeline .fl.lane2 { top: 46px; }
 .timeline .fl.heavy { border-bottom: 2px solid var(--crit); }
-.timeline .fl.subject { background: var(--accent); color: #fff; }
-.timeline .cand { position: absolute; top: 60px; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface); font-size: 0; }
-.timeline .cand.chosen { background: var(--accent); }
-.timeline .cand.blocked { border-color: var(--crit); background: var(--crit-soft); }
+.timeline .fl.subject { background: var(--accent); color: var(--bg); font-weight: 700; z-index: 1; }
+.timeline .cand { position: absolute; top: 96px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.timeline .cand i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface); display: block; }
+.timeline .cand span { font-family: var(--f-mono); font-size: 10px; color: var(--muted); }
+.timeline .cand.chosen i { background: var(--accent); }
+.timeline .cand.chosen span { color: var(--accent); font-weight: 700; }
+.timeline .cand.blocked i { border-color: var(--crit); background: var(--crit-soft); }
+.timeline .cand.blocked span { color: var(--crit); }
 
 /* messages inside a desk */
 .msg {

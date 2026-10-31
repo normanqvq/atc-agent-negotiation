@@ -1,13 +1,13 @@
 // looks like a paper flight progress strip: one box per fact, REAL or SIM tagged
 export default function FlightStrip({ scenario }) {
   const s = scenario
-  const cause = Object.entries(s.delay_breakdown || {})
+  const parts = Object.entries(s.delay_breakdown || {})
     .filter(([, v]) => v > 0)
     .map(([k, v]) => `${k.replace('_', ' ')} ${v}`)
-    .join(' · ') || s.cause
+  const cause = parts.length ? parts.join(' · ') : 'not attributed'
 
   return (
-    <div className="panel">
+    <div className="panel" id={'row-' + s.row_id}>
       <div className="panel-title">
         <h3>Disruption</h3>
         <div className="chips">

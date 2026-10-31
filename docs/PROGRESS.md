@@ -2,7 +2,7 @@
 
 > 每次 commit 都更新。Norman 的 Claude 用量滿了，隊友從「下一步」直接接著做。接手前先讀根目錄 `CLAUDE.md`。
 
-最後更新：10/31 12:20 · branch `ui-concord` · 做的人：Norman + Claude
+最後更新：10/31 12:55 · branch `ui-concord` · 做的人：Norman + Claude
 
 ## 怎麼跑
 
@@ -13,6 +13,7 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 已完成
 
+- [x] UI 第二版：3 頁（Intro / Console / Evidence），console 打開自動跑一場，三個桌子佔滿畫面。審查過，7 個必修都修了
 - [x] UI 第一版（branch ui-concord）：7 頁 deck（Title、Problem、How it works、Console、Evidence、Rules、Closing），鍵盤左右翻頁，淺色深色兩套主題
 - [x] Console：6 個環境維度按鈕 + 真實航班下拉 + Run；FlightStrip（REAL/SIM 標記）；到達隊列時間軸；三欄 agent 逐條顯示 + Chief 列；規則面板（紅色攔截）；決定卡（Approve / Override / Why 追溯 / Replay）
 - [x] 後端沒開時自動退回 `data/sample_log.json`，畫面標 REPLAY · backend offline；後端開了就 POST /api/run
@@ -26,7 +27,7 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 進行中
 
-- [ ] UI 審查中（subagent），之後 merge 回 main
+- [ ] 等後端 `POST /api/run`。合約寫在 `docs/API.md`
 
 ## 下一步（按順序，誰接手就從第一個沒打勾的開始）
 
