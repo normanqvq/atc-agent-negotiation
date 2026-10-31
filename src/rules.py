@@ -86,27 +86,22 @@ def queue_times(world):
 
 def check_wake(world, cand):
     arr = t(world, cand["arrival"])
-    before = None  # closest arrival at or before us
+    before = None  # closest arrival at or before us (for the pass text)
     after = None   # closest arrival after us
+    # check every neighbour, not just the closest: a heavy and a medium can share a minute
     for m, f in queue_times(world):
         if m <= arr:
             before = (m, f)
-        elif after is None:
-            after = (m, f)
-
-    if before:
-        m, f = before
-        need = WAKE_GAP_BEHIND.get(f["wake_category"], 2)
-        gap = arr - m
-        if gap < need:
-            return make_check("WAKE-01", True, "%s: preceding %s is %s, gap %d min < %d" % (
-                cand["arrival"], f["flight"], f["wake_category"].capitalize(), gap, need))
-    if after:
-        m, f = after
-        gap = m - arr
-        if gap < WAKE_GAP_AHEAD:
-            return make_check("WAKE-01", True, "%s: %s follows only %d min behind us, needs %d" % (
-                cand["arrival"], f["flight"], gap, WAKE_GAP_AHEAD))
+            need = WAKE_GAP_BEHIND.get(f["wake_category"], 2)
+            if arr - m < need:
+                return make_check("WAKE-01", True, "%s: preceding %s is %s, gap %d min < %d" % (
+                    cand["arrival"], f["flight"], f["wake_category"].capitalize(), arr - m, need))
+        else:
+            if after is None:
+                after = (m, f)
+            if m - arr < WAKE_GAP_AHEAD:
+                return make_check("WAKE-01", True, "%s: %s follows only %d min behind us, needs %d" % (
+                    cand["arrival"], f["flight"], m - arr, WAKE_GAP_AHEAD))
 
     parts = []
     if before:

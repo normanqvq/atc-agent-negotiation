@@ -21,15 +21,18 @@ def cost(world, candidates, cand_id):
     return soft_cost(world, find(candidates, cand_id))["total"]
 
 
-def agreed_candidate(messages):
-    # consensus = nobody was blocked and all three desks point at the same candidate.
-    # round 1: all three picked it. round 2+: all three accepted the Chief's proposal
+def agreed_candidate(messages, round_no, current_proposal):
+    # round 1: nobody was blocked and all three desks picked the same candidate.
+    # round 2+: all three accepted the Chief's proposal (three counters to the same
+    # other candidate is not consensus, the Chief proposes again)
     desks = [m for m in messages if m["agent"] != "CHIEF"]
     if any(m.get("blocked_by") for m in desks):
         return None
-    picks = set(m["candidate"] for m in desks)
-    if len(picks) == 1:
-        return picks.pop()
+    if round_no == 1:
+        picks = set(m["candidate"] for m in desks)
+        return picks.pop() if len(picks) == 1 else None
+    if all(m["action"] == "accept" and m["candidate"] == current_proposal["candidate"] for m in desks):
+        return current_proposal["candidate"]
     return None
 
 
@@ -50,7 +53,7 @@ def compromise(world, candidates, messages):
 
 
 def rule_on_round(world, candidates, messages, round_no, current_proposal):
-    agreed = agreed_candidate(messages)
+    agreed = agreed_candidate(messages, round_no, current_proposal)
     if agreed is not None:
         if round_no == 1:
             text = "All three desks pick #%d. Consensus in round 1" % agreed

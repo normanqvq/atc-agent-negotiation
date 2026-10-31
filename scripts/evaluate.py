@@ -273,6 +273,19 @@ def main():
         results = list(pool.map(lambda j: evaluate_one(*j), jobs))
     print("done in %.0fs" % (time.time() - start))
 
+    # label the agents by what actually ran, not by whether a key was set
+    # (a bad key or rate limits make every call fall back to rules silently)
+    total_calls = sum(r["live_proposals"] for r in results)
+    fell_back = sum(r["fallback_calls"] for r in results)
+    if not os.environ.get("ANTHROPIC_API_KEY") or fell_back == total_calls:
+        agents_label = "rule-based"
+        mode = "rule-based fallback agents, no LLM (no key, or every call failed)"
+    elif fell_back:
+        agents_label = "%s (%d of %d calls fell back to rules)" % (MODEL, fell_back, total_calls)
+        mode = "%s, 3 separate calls per round in parallel; %d of %d calls fell back to rules" % (MODEL, fell_back, total_calls)
+    else:
+        agents_label = MODEL
+
     solved = [r for r in results if r["status"] != "no_safe_plan"]
     n = len(results)
     consensus = sum(1 for r in results if r["decided_by"] == "consensus")
@@ -312,7 +325,7 @@ def main():
         "_note": "Written by scripts/evaluate.py (%s). Agents: %s. See docs/EVAL.md." % (summary["when"], mode),
         "n_events": n,
         "pool_note": "%d runs: 20 real ATL arrivals from US DOT 2015 x 3 condition sets, agents: %s" % (
-            n, MODEL if os.environ.get("ANTHROPIC_API_KEY") else "rule-based"),
+            n, agents_label),
         "headline": {
             "consensus_rate": summary["consensus_rate"],
             "injected_violations_blocked": summary["injected"],

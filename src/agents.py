@@ -20,7 +20,7 @@ from concurrent.futures import ThreadPoolExecutor
 from src import rules
 
 MODEL = "claude-haiku-5-5"
-MAX_TEXT = 140  # UI shows one short line per message
+MAX_TEXT = 120  # UI shows one short line per message (issue #3: <= 120 chars)
 
 # label / sees are shown in the UI as-is, copied from data/sample_log.json
 AGENTS = {
@@ -248,9 +248,12 @@ def ask_haiku(agent, world, cands, round_no, chief_proposal):
 
     action = answer.get("action")
     candidate = answer.get("candidate")
-    text = str(answer.get("text", "")).strip()
-    if action not in actions or candidate not in ids or not text:
+    text = answer.get("text")
+    # type() not isinstance(): True is an int in Python and True == 1
+    if action not in actions or type(candidate) is not int or candidate not in ids \
+            or not isinstance(text, str) or not text.strip():
         raise ValueError("bad answer %r" % answer)
+    text = text.strip()
     # keep accept / counter honest: accept always means the Chief's candidate
     if action == "accept":
         candidate = chief_proposal["candidate"]
