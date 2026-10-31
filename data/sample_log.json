@@ -1,0 +1,100 @@
+{
+  "_note": "UI 和後端的合約。後端 POST /api/run 回傳這個格式。數值是示例。",
+
+  "environment": {
+    "_note": "評審在畫面上選的環境維度",
+    "weather":         { "value": "thunderstorm", "label": "雷暴",       "options": ["clear", "fog", "thunderstorm"] },
+    "runway":          { "value": "single",       "label": "單跑道",     "options": ["dual", "single", "one_closed"] },
+    "aircraft_status": { "value": "normal",       "label": "正常",       "options": ["normal", "low_fuel", "medical"] },
+    "terminal":        { "value": "tight",        "label": "登機口緊張", "options": ["normal", "tight", "zone_closed"] },
+    "ground_crew":     { "value": "shift_ending", "label": "班次快結束", "options": ["normal", "shift_ending"] },
+    "passengers":      { "value": "many_connecting", "label": "多轉機旅客", "options": ["few", "many_connecting"] }
+  },
+
+  "scenario": {
+    "_note": "真實的一行，來自 flights.csv",
+    "pool_index": 7,
+    "row_id": 48213,
+    "date": "2015-01-15",
+    "flight": "DL1234",
+    "airline": "Delta Air Lines Inc.",
+    "origin": "MSP",
+    "destination": "ATL",
+    "scheduled_arrival": "17:05",
+    "delay_min": 45,
+    "delay_breakdown": { "weather": 45, "late_aircraft": 0, "nas": 0, "carrier": 0, "security": 0 },
+    "real_fields": ["flight", "airline", "origin", "destination", "scheduled_arrival", "delay_min", "delay_breakdown", "arrival_queue"],
+    "simulated_fields": ["gate", "fuel", "crew", "connections", "wake_category"]
+  },
+
+  "arrival_queue": {
+    "_note": "同日同機場前後一小時的真實到達航班，wake_category 是模擬的",
+    "flights": [
+      { "flight": "DL0421", "sched_arrival": "17:28", "wake_category": "heavy",  "real": true },
+      { "flight": "WN1187", "sched_arrival": "17:35", "wake_category": "medium", "real": true },
+      { "flight": "DL0888", "sched_arrival": "17:44", "wake_category": "medium", "real": true },
+      { "flight": "AA2290", "sched_arrival": "17:58", "wake_category": "medium", "real": true },
+      { "flight": "DL1234", "sched_arrival": "17:05", "wake_category": "medium", "real": true, "is_subject": true }
+    ]
+  },
+
+  "agents": {
+    "ATC":    { "label": "塔台 ATC",    "sees": "到達時段表、前後機型的尾流類別、天氣降低後的接收率" },
+    "PILOT":  { "label": "機長 Pilot",  "sees": "油量、機組執勤剩餘時間、轉機旅客" },
+    "GROUND": { "label": "地勤 Ground", "sees": "登機口佔用、地勤班次、這架飛機的下一段航班" }
+  },
+
+  "candidates": [
+    { "id": 1, "arrival": "17:31", "gate": "B12", "mode": "hold",      "note": "最早時段" },
+    { "id": 2, "arrival": "17:40", "gate": "B12", "mode": "hold",      "note": "" },
+    { "id": 3, "arrival": "17:52", "gate": "B14", "mode": "slow_down", "note": "減速 8 分鐘代替等待" },
+    { "id": 4, "arrival": "18:03", "gate": "B14", "mode": "hold",      "note": "" },
+    { "id": 5, "arrival": "18:12", "gate": "C3",  "mode": "hold",      "note": "登機口較遠" }
+  ],
+
+  "rounds": [
+    {
+      "round": 1,
+      "messages": [
+        { "id": "m1", "agent": "ATC",    "action": "rank",    "candidate": 3, "text": "排序：方案 3 > 1 > 5。雷暴接收率減半，17:40 前時段已滿" },
+        { "id": "m2", "agent": "PILOT",  "action": "propose", "candidate": 1, "text": "要求 17:31 落地，保住 32 位轉機旅客", "blocked_by": "WAKE-01" },
+        { "id": "m3", "agent": "GROUND", "action": "counter", "candidate": 3, "text": "登機口 B12 18:10 前被佔，建議 B14" },
+        { "id": "m4", "agent": "CHIEF",  "action": "propose", "candidate": 3, "text": "方案 1 被 WAKE-01 攔下。折中：方案 3，請確認" }
+      ]
+    },
+    {
+      "round": 2,
+      "messages": [
+        { "id": "m5", "agent": "ATC",    "action": "accept", "candidate": 3, "text": "接受方案 3" },
+        { "id": "m6", "agent": "PILOT",  "action": "accept", "candidate": 3, "text": "接受方案 3，條件：減速飛行代替空中等待" },
+        { "id": "m7", "agent": "GROUND", "action": "accept", "candidate": 3, "text": "接受方案 3" },
+        { "id": "m8", "agent": "CHIEF",  "action": "decide", "candidate": 3, "text": "三方同意，第 2 輪達成一致" }
+      ]
+    }
+  ],
+
+  "rule_checks": [
+    { "id": "WAKE-01", "name": "尾流間隔",   "status": "blocked", "detail": "機長提議 17:31：前機 DL0421 重型，間隔不足", "source": "FAA JO 7110.65", "message_id": "m2" },
+    { "id": "CAP-01",  "name": "時段容量",   "status": "pass",    "detail": "雷暴接收率減半後，17:52 時段仍有空位",   "source": "假設：真實到達量 × 0.5" },
+    { "id": "FUEL-01", "name": "落地油量",   "status": "pass",    "detail": "方案 3：高於法規最低值",                "source": "14 CFR 121.639" },
+    { "id": "GATE-01", "name": "登機口衝突", "status": "pass",    "detail": "B14 17:58–19:00 空閒",                 "source": "邏輯規則" }
+  ],
+
+  "decision": {
+    "candidate": 3,
+    "arrival": "17:52",
+    "gate": "B14",
+    "mode": "slow_down",
+    "summary": "17:52 落地 · 登機口 B14 · 減速 8 分鐘代替等待",
+    "agreed_in_round": 2,
+    "decided_by": "consensus",
+    "status": "pending_human",
+    "trace": [
+      { "claim": "17:52 落地",  "links": ["m1", "CAP-01", "WAKE-01"] },
+      { "claim": "登機口 B14",  "links": ["m3", "GATE-01"] },
+      { "claim": "減速代替等待", "links": ["m6", "FUEL-01"] }
+    ]
+  },
+
+  "meta": { "elapsed_s": 6.4, "tokens": 2130, "ai_enabled": true, "model": "claude-haiku-5-5" }
+}
