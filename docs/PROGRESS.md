@@ -2,7 +2,7 @@
 
 > Updated with every commit. If Norman's Claude runs out of usage, a teammate continues from "Next". Read the root `CLAUDE.md` first.
 
-Last update: 31 Oct 14:30 · branch `main` · Norman + Claude
+Last update: 31 Oct 21:05 · branch `main` · Norman + Claude
 
 ## How to run
 
@@ -15,6 +15,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 
 ## Done
 
+- [x] README rewritten in the usual GitHub showcase format: badges, cropped UI screenshots in `docs/screenshots/`, rulebook and results tables, quick start, API, limits, team. Stale Jev / pick_event mentions removed from `.env.example` and `data/README.md`
 - [x] UI polish (branch `ui-3d-aircraft`): 3D airliner holding over the runway on the intro (three.js 0.170.0); the judge's weather shows on the setup and live-run screens (rain and lightning, fog, sun) and other non-normal conditions as yellow signs top-right; no-plan timer shows ms instead of overflowing
 - [x] Repo, README, MIT license, .gitignore, project CLAUDE.md
 - [x] Contracts: `data/sample_log.json`, `data/sample_eval.json`, `data/rules.json`; field list in `docs/API.md`

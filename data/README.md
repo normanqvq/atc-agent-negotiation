@@ -22,12 +22,12 @@ DESTINATION_AIRPORT, SCHEDULED_DEPARTURE, SCHEDULED_ARRIVAL, DEPARTURE_DELAY,
 ARRIVAL_DELAY, WEATHER_DELAY, LATE_AIRCRAFT_DELAY.
 
 Per the problem statement, pick any row with WEATHER_DELAY > 15 or
-LATE_AIRCRAFT_DELAY > 20. `src/pick_event.py` does this.
+LATE_AIRCRAFT_DELAY > 20. `scripts/build_pool.py` does this.
 
 ## Fields we make up
 
-The dataset has no fuel, gate or crew data. `pick_event.py` adds these with
-fixed, clearly labelled assumptions (see the top of that file). Say this in
+The dataset has no fuel, gate or crew data. `src/scenario.py` simulates these from
+the judge's conditions with fixed, clearly labelled assumptions. Say this in
 the demo: synthetic fields are synthetic.
 
 ## About the flights.csv we actually have
