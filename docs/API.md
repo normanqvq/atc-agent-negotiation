@@ -20,7 +20,7 @@
 }
 ```
 
-`environment` 的值是純字串。選項清單在 `ui/src/console/ScenarioPicker.jsx` 的 DIMENSIONS。
+`environment` 的值是純字串。選項清單在 `ui/src/lib/scenario.js` 的 DIMENSIONS。
 `pool_index` 對應 `data/pool.json` 裡的一筆。
 
 回傳：跟 `data/sample_log.json` 同樣的形狀。前端真的會讀的欄位：
@@ -39,4 +39,4 @@
 
 前端不讀（可以省略）：`environment`、`scenario.pool_index`、`real_fields`、`simulated_fields`、`decision.arrival/gate/mode`。
 
-前端的防呆：回傳缺少 rounds / candidates / rule_checks / agents / scenario / arrival_queue / decision 任何一個，或 25 秒沒回，就退回範例紀錄。
+後端連不上或回非 200，前端就播範例紀錄。回傳的形狀前端不再檢查，請照 sample_log.json 給齊。

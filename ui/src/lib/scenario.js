@@ -15,17 +15,11 @@ export function defaultEnvironment() {
   return env
 }
 
-export function labelFor(key, value) {
-  const d = DIMENSIONS.find(x => x.key === key)
-  const o = d && d.options.find(x => x[0] === value)
-  return o ? o[1] : value
-}
-
 // short text of only the conditions that differ from normal, e.g. "Thunderstorm · Single runway"
 export function envSummary(env) {
   const parts = []
   for (const d of DIMENSIONS) {
-    if (env[d.key] !== d.options[0][0]) parts.push(d.label + ': ' + labelFor(d.key, env[d.key]))
+    if (env[d.key] !== d.options[0][0]) parts.push(d.label + ': ' + d.options.find(o => o[0] === env[d.key])[1])
   }
   return parts.length ? parts.join(' · ') : 'All conditions normal'
 }

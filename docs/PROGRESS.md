@@ -13,6 +13,7 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 已完成
 
+- [x] UI 第四版（branch `ui-impeccable`）：改成「一個畫面一件事」的引導式 demo，照 PLAN.md 的 3 分鐘腳本走：Problem → 選條件 → 航班/時間軸 → 每輪一頁 → 被擋的提案放大一頁 → 方案 + Approve → 追溯 → 失敗案例 → 評估數字 → 口號。只做 16:9 淺色，拿掉深色、完整 log 頁、防呆檢查。說明在 `ui/DESIGN.md`
 - [x] UI 第三版（branch `ui-impeccable`）：用 impeccable 重做視覺，偵測器 13 → 0 個問題。改成 4 頁 PPT 式翻頁（Intro / Set the conditions / Console / Evidence），固定 16:9 舞台等比縮放，不做手機版。條件和航班選擇獨立一頁，按 Run 才開始跑（console 不再自動跑）。協商板改成「桌子橫排、回合直排」，Chief 裁決只出現一次橫跨三欄。設計規則寫在 `ui/DESIGN.md`
 - [x] UI 第二版：3 頁（Intro / Console / Evidence），console 打開自動跑一場，三個桌子佔滿畫面。審查過，7 個必修都修了
 - [x] UI 第一版（branch ui-concord）：7 頁 deck（Title、Problem、How it works、Console、Evidence、Rules、Closing），鍵盤左右翻頁，淺色深色兩套主題

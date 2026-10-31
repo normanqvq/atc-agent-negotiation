@@ -1,45 +1,36 @@
-# Concord UI 設計說明（DESIGN）
+# Concord demo 設計說明（DESIGN）
 
-用 [impeccable](https://impeccable.style) 的規則重做過一次。改 UI 前先看這份，保持一致。
+評審一天看很多組，注意力很短。所以 demo 的原則只有一條：**一個畫面只講一件事**。報告的人一直按 → 就好。
+
+## 流程（照 docs/PLAN.md 的 3 分鐘腳本）
+
+| 底部標籤 | 畫面 | 講什麼 |
+|---|---|---|
+| Problem | Intro | 問題 + 三個桌子、規則、人簽名的架構 |
+| Live run | Set the conditions | 評審選天氣、跑道等條件和一班真實航班，按 Run（或 →） |
+| Live run | 航班 + 時間軸 | 這班飛機晚多久、程式產生了哪些候選時段 |
+| Live run | Round 1 | 三個 agent 各說一句 |
+| Live run | Blocked | 被規則擋下的提案放大：規則、出處、Chief 的折衷 |
+| Live run | Round 2 … | 每一輪一個畫面 |
+| Live run | Plan | 最終方案超大字，按 Approve / Override |
+| Trust | Trace | 方案每一部分對應哪句話、哪條規則 |
+| Failure | Where it fails | 失敗案例（評估資料） |
+| Evidence | What we measured | 三個數字 + 和 FCFS、最佳解的比較 |
+| Evidence | Close | 口號，問答時停在這頁 |
+
+Live run 的畫面數是從後端回傳的紀錄算出來的：幾輪就幾個 Round 畫面，每個被擋的提案多一個 Blocked 畫面。
 
 ## 版面
 
-- 只做橫向 16:9。所有頁面排在固定 **1600×900** 的舞台上，`App.jsx` 依視窗大小等比縮放（像 Keynote）。不做手機版，CSS 裡不要再加 `max-width` media query，也不要用 `vw` / `vh`（舞台縮放後會算錯）。
-- 一次只顯示一頁，像 PPT 一樣翻頁：← → / PageUp PageDown / 空白鍵，或右下角按鈕。
-- 4 頁：Intro → Set the conditions（評審選條件和航班）→ Console（按 Run 才開始跑）→ Evidence。
-- Console 頁本身不捲動：左欄（Disruption、Arrival queue、協商板）自己捲動並自動跟著最新訊息，右欄固定放 Decision + Rule checks。
+- 只做橫向 16:9、只做淺色。所有畫面排在固定 1600×900 的舞台上，`App.jsx` 等比縮放。不要用 `vw`/`vh`，不要加 media query。
+- 鍵盤：→ / PageDown 下一頁，← / PageUp 上一頁（翻頁筆可以用）。
+- 後端沒開時自動播 `data/sample_log.json`，demo 照樣能跑。
 
-## 世界觀：機場地面標誌 + 紙本航班條
+## 視覺
 
-只有一個招牌手法，不要到處加：
+- 紅底白字的強制標誌 `.sign--stop`：**只**用在被規則擋下、No safe plan
+- 黑底黃字的位置標誌 `.sign--code` 和 Chief 黑條：程式做的事
+- 藍：LLM agent。綠：人（Approve）
+- 字體：Barlow Condensed 標題、Barlow 內文、JetBrains Mono 只用在資料（航班號、時間、規則 ID）
 
-| 元素 | 樣式 | 用在 |
-|---|---|---|
-| 強制標誌 `.sign--stop` | 紅底白字 | **只**用在規則擋下東西（WAKE-01 等）、No safe plan |
-| 位置標誌 `.sign--code` | 黑底黃字黃框 | 程式做的事：Chief 裁決列、Code, not LLM |
-| 停止等待線 `.holdshort` | 兩實兩虛黃線 | Intro 上 agent 和規則的分界 |
-
-## 顏色 = 誰在做事
-
-- 藍 `--llm`：LLM agent（三個桌子）
-- 黑 + 黃：程式（Chief、規則、fallback）
-- 綠 `--human`：人（Approve、已批准）
-- 紅：被規則擋下
-
-顏色只表示狀態和角色，不拿來裝飾。
-
-## 字體
-
-- Barlow Condensed：大標題、面板標題（大寫）
-- Barlow：內文、按鈕、標籤
-- JetBrains Mono：**只**用在資料（航班號、時間、規則 ID、候選編號）
-
-## 不要做的事（impeccable 偵測器會抓）
-
-- 卡片側邊或上方的粗色條（`border-left: 4px solid ...`）
-- 卡片裡再放卡片
-- 標題上方的小字 eyebrow
-- 用 unicode 符號當圖示（用 `Icon.jsx`）
-- 沒有意義的閃爍圓點、發光外框
-
-檢查方式：`npx impeccable detect http://localhost:5173`，目前 0 個問題（hold-short 黃線的 advisory 是刻意的）。
+不要再往畫面上加東西。想加之前先問：評審 3 秒內看得懂嗎？
