@@ -1,6 +1,7 @@
 import { DIMENSIONS, envSummary } from '../lib/scenario.js'
 import poolFile from '../../../data/pool.json'
 import Icon from '../Icon.jsx'
+import TailFin from '../TailFin.jsx'
 
 const pool = poolFile.flights
 
@@ -56,6 +57,7 @@ export default function Setup({ env, onEnv, poolIndex, onPoolIndex, onRun }) {
                 return (
                   <label key={f.pool_index} className={'flight-row' + (on ? ' flight-row--on' : '')}>
                     <input type="radio" name="flight" checked={on} onChange={() => onPoolIndex(f.pool_index)} />
+                    <TailFin flight={f.flight} />
                     <b className="mono">{f.flight}</b>
                     <span className="mono">{f.origin}→{f.destination}</span>
                     <span className="muted">{f.date}</span>
@@ -69,10 +71,13 @@ export default function Setup({ env, onEnv, poolIndex, onPoolIndex, onRun }) {
         </div>
 
         <div className="setup-go">
-          <p>
-            <b className="mono">{flight ? `${flight.flight} ${flight.origin}→${flight.destination}, +${flight.delay_min} min` : 'No flight'}</b>
-            <span>{envSummary(env)}</span>
-          </p>
+          <div className="setup-pick">
+            {flight && <TailFin flight={flight.flight} size={44} />}
+            <p>
+              <b className="mono">{flight ? `${flight.flight} ${flight.origin}→${flight.destination}, +${flight.delay_min} min` : 'No flight'}</b>
+              <span>{flight ? flight.airline + ' · ' : ''}{envSummary(env)}</span>
+            </p>
+          </div>
           <button className="btn btn--lg" onClick={onRun}>Run negotiation <Icon name="arrow" /></button>
         </div>
       </div>

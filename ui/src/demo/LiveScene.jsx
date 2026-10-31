@@ -207,7 +207,8 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
         <aside className="live-side">
           <div className="timer">
             <small>{running ? 'Elapsed' : 'Negotiated in'}</small>
-            <b className="mono">{(ms / 1000).toFixed(ms < 1 ? 6 : ms < 100 ? 3 : 1)}<span>s</span></b>
+            {/* under 0.1 s (no-plan runs, no AI called) show milliseconds so it is not "0.0 s" and still fits */}
+            <b className="mono">{ms < 100 ? ms.toFixed(1) : (ms / 1000).toFixed(1)}<span>{ms < 100 ? 'ms' : 's'}</span></b>
             <p>
               {noSafePlan
                 ? 'No desk called · the rulebook left no legal candidate'
