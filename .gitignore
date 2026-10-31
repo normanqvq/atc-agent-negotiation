@@ -1,0 +1,21 @@
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# secrets
+.env
+
+# big dataset, download it yourself (see data/README.md)
+data/flights.csv
+data/*.zip
+
+# generated logs
+logs/*.json
+logs/*.jsonl
+
+# editor / os
+.DS_Store
+.vscode/
+.idea/

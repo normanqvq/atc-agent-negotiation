@@ -1,0 +1,25 @@
+{
+  "flight": "DL1234",
+  "airline": "DL",
+  "origin": "ORD",
+  "destination": "ATL",
+  "date": "2015-01-15",
+  "scheduled_departure": "14:00",
+  "scheduled_arrival": "17:05",
+  "departure_delay_min": 45,
+  "weather_delay_min": 45,
+  "late_aircraft_delay_min": 0,
+  "cause": "weather",
+
+  "_note": "fields below are synthetic assumptions, not in the dataset",
+  "fuel_reserve_min": 70,
+  "min_fuel_reserve_min": 45,
+  "passengers_connecting": 32,
+  "connection_cutoff": "18:30",
+  "gates_available": ["B12", "B14", "C3"],
+  "original_gate": "B12",
+  "gate_free_from": {"B12": "17:50", "B14": "17:30", "C3": "17:00"},
+  "crew_shift_end": "18:45",
+  "runway_slots": ["17:40", "17:48", "17:55", "18:03", "18:12", "18:20"],
+  "min_wake_separation_min": 2
+}
