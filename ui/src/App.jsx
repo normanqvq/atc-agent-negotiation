@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Intro from './slides/Intro.jsx'
 import Setup from './slides/Setup.jsx'
-import WaitingScene from './demo/WaitingScene.jsx'
+import LiveScene from './demo/LiveScene.jsx'
 import SituationScene from './demo/SituationScene.jsx'
 import RoundScene from './demo/RoundScene.jsx'
 import BlockScene from './demo/BlockScene.jsx'
@@ -18,13 +18,11 @@ import { runNegotiation } from './lib/run.js'
 // the 3-minute story from docs/PLAN.md, one idea per screen. the presenter only presses →
 const ACTS = ['Problem', 'Live run', 'Trust', 'Failure', 'Evidence']
 
-// every screen in order. the live part comes from the run: one screen per round,
-// plus one screen for every proposal a rule blocked.
+// every screen in order. after Run: the live animation, then the explaining screens,
+// one per round plus one for every proposal a rule blocked.
 function buildSteps(log) {
-  const steps = [{ id: 'intro', act: 0 }, { id: 'setup', act: 1 }]
-  if (!log) {
-    steps.push({ id: 'waiting', act: 1 })
-  } else {
+  const steps = [{ id: 'intro', act: 0 }, { id: 'setup', act: 1 }, { id: 'live', act: 1 }]
+  if (log) {
     steps.push({ id: 'situation', act: 1 })
     for (const r of log.rounds) {
       steps.push({ id: 'round', act: 1, round: r.round })
@@ -51,6 +49,8 @@ export default function App() {
   const [log, setLog] = useState(null)
   const [ranEnv, setRanEnv] = useState(env)
   const [signed, setSigned] = useState({ state: 'pending', stamp: '' })
+  const [runStart, setRunStart] = useState(0) // for the timer on the live screen
+  const [runMs, setRunMs] = useState(0)
 
   const steps = buildSteps(log)
   const step = steps[idx]
@@ -59,8 +59,12 @@ export default function App() {
     setLog(null)
     setSigned({ state: 'pending', stamp: '' })
     setRanEnv(env)
-    setIdx(2) // the screen right after setup
-    setLog(await runNegotiation(env, poolIndex))
+    setIdx(2) // the live screen
+    const start = performance.now()
+    setRunStart(start)
+    const result = await runNegotiation(env, poolIndex)
+    setRunMs(performance.now() - start)
+    setLog(result)
   }
 
   function goTo(i) {
@@ -100,7 +104,7 @@ export default function App() {
     switch (step.id) {
       case 'intro': return <Intro onNext={next} />
       case 'setup': return <Setup env={env} onEnv={setEnv} poolIndex={poolIndex} onPoolIndex={setPoolIndex} onRun={startRun} />
-      case 'waiting': return <WaitingScene />
+      case 'live': return <LiveScene log={log} flight={poolFile.flights.find(f => f.pool_index === poolIndex)} env={ranEnv} runStart={runStart} runMs={runMs} />
       case 'situation': return <SituationScene log={log} ranEnv={ranEnv} />
       case 'round': return <RoundScene log={log} round={step.round} />
       case 'block': return <BlockScene log={log} msgId={step.msgId} />
@@ -125,7 +129,7 @@ export default function App() {
           <nav className="nav">
             <span className="num">{idx + 1} / {steps.length}</span>
             <button onClick={() => goTo(idx - 1)} disabled={idx === 0} aria-label="Previous"><Icon name="left" /></button>
-            <button onClick={next} disabled={idx === steps.length - 1 || step.id === 'waiting'} aria-label="Next"><Icon name="right" /></button>
+            <button onClick={next} disabled={idx === steps.length - 1 || (step.id === 'live' && !log)} aria-label="Next"><Icon name="right" /></button>
           </nav>
         </div>
       </div>

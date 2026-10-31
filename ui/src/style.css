@@ -178,14 +178,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .setup-go p { display: flex; flex-direction: column; gap: 2px; font-size: 16px; color: var(--muted); }
 .setup-go p b { font-size: 18px; color: var(--ink); }
 
-/* ---------- waiting ---------- */
-.scene--wait { justify-content: center; }
-.scene--wait h2 { font-family: var(--f-display); font-weight: 800; text-transform: uppercase; font-size: 96px; }
-.wait-steps { padding-left: 1.3em; font-size: 24px; color: var(--muted); display: flex; flex-direction: column; gap: 10px; }
-.wait-steps li { animation: rise .5s var(--ease) both; }
-.wait-steps li:nth-child(2) { animation-delay: .6s; }
-.wait-steps li:nth-child(3) { animation-delay: 1.2s; }
-
 /* ---------- situation: the flight + the timeline ---------- */
 .situation { zoom: 1.6; }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
@@ -290,6 +282,86 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .scene--close { justify-content: center; gap: 40px; }
 .close-line { font-family: var(--f-display); font-weight: 800; text-transform: uppercase; font-size: 128px; line-height: .9; max-width: 11em; animation: rise .7s var(--ease) both; }
 .close-foot { font-size: 18px; color: var(--muted); }
+
+/* ---------- live: the flow diagram right after Run ---------- */
+.scene--live { gap: 20px; }
+.live { display: grid; grid-template-columns: 1060px minmax(0, 1fr); gap: 48px; flex: 1; }
+.flow { position: relative; width: 1060px; height: 620px; }
+.wires { position: absolute; inset: 0; width: 1060px; height: 620px; overflow: visible; }
+.wires path { fill: none; stroke: var(--line-strong); stroke-width: 2; stroke-dasharray: 4 6; }
+
+.node { position: absolute; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); transition: border-color .3s, background-color .3s, box-shadow .3s; }
+.node--input { width: 320px; height: 56px; padding: 7px 14px; display: flex; flex-direction: column; justify-content: center; }
+.node--input small { font-size: 12px; font-weight: 700; color: var(--muted); }
+.node--input b { font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.node--code { width: 460px; height: 50px; padding: 0 14px; display: flex; align-items: center; gap: 12px; font-size: 15px; white-space: nowrap; overflow: hidden; }
+.node--code.busy { color: var(--muted); }
+.node--code .mono { font-size: 14px; }
+
+.node--agent { width: 320px; height: 130px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.node--agent.thinking { border-color: var(--llm); box-shadow: 0 8px 24px -14px rgb(31 79 184 / .55); }
+.node--agent.blocked { border-color: var(--sign-red); background: var(--crit-soft); }
+.node--agent.blocked .agent-say p { text-decoration: line-through; text-decoration-color: var(--crit); }
+.agent-head { display: flex; align-items: center; justify-content: space-between; }
+.agent-head h3 { font-family: var(--f-display); font-size: 24px; font-weight: 700; text-transform: uppercase; color: var(--llm); }
+.haiku { font-size: 12px; font-weight: 700; color: var(--llm); background: var(--llm-soft); padding: 2px 7px; border-radius: 2px; }
+.agent-think { font-size: 18px; color: var(--muted); }
+.thinking .agent-think { color: var(--llm); }
+.agent-think span { animation: dot 1.2s infinite; opacity: .2; }
+.agent-think span:nth-child(2) { animation-delay: .2s; } .agent-think span:nth-child(3) { animation-delay: .4s; }
+@keyframes dot { 50% { opacity: 1; } }
+.agent-say { display: flex; flex-direction: column; gap: 4px; animation: rise .45s var(--ease) both; }
+.agent-act { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--llm); text-transform: capitalize; }
+.agent-say p { font-size: 17px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.gate { position: absolute; left: 0; width: 1060px; height: 48px; }
+.gate .holdshort { position: absolute; left: 0; right: 0; top: 0; }
+.gate-label { position: absolute; left: 0; top: 26px; font-size: 13px; }
+.gate-mark { position: absolute; top: 22px; transform: translateX(-50%); animation: rise .35s var(--ease) both; }
+.gate-mark .pass { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--human); color: #fff; font-size: 16px; }
+.gate-mark .sign { font-size: 16px; }
+
+.node--chief, .node--plan { width: 1060px; display: flex; align-items: center; gap: 18px; padding: 0 20px; }
+.node--chief { height: 50px; color: var(--muted); }
+.node--chief .who, .node--plan .who { font-family: var(--f-display); font-weight: 700; font-size: 17px; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.node--chief p, .node--plan p { font-size: 18px; animation: rise .4s var(--ease) both; }
+.node--chief.on { background: var(--sign-black); color: #F2F4F7; border-color: var(--sign-black); box-shadow: inset 0 0 0 3px var(--sign-black), inset 0 0 0 4px var(--sign-yellow); }
+.node--chief.on .who { color: var(--sign-yellow); }
+.node--plan { height: 58px; color: var(--faint); }
+.node--plan.on { border: 2px solid var(--ink); color: var(--ink); }
+.node--plan.on p { font-family: var(--f-display); font-size: 26px; font-weight: 700; text-transform: uppercase; flex: 1; }
+.stamp-sm { font-size: 13px; font-weight: 700; padding: 5px 9px; border-radius: 3px; background: var(--sign-yellow); color: var(--sign-black); white-space: nowrap; }
+
+/* packets: dots that travel along a wire */
+.packet { position: absolute; left: 0; top: 0; width: 12px; height: 12px; border-radius: 50%; offset-rotate: 0deg; animation: travel .8s cubic-bezier(.45, 0, .2, 1) both; z-index: 3; }
+.packet--loop { animation: travel 1s linear infinite; }
+.packet--data { background: var(--ink); }
+.packet--llm { background: var(--llm); }
+.packet--chief { background: var(--sign-yellow); box-shadow: 0 0 0 2px var(--sign-black); }
+@keyframes travel { from { offset-distance: 0%; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } to { offset-distance: 100%; opacity: 0; } }
+
+/* right side: timer, rounds, what just happened */
+.live-side { display: flex; flex-direction: column; gap: 22px; }
+.timer { border-top: 2px solid var(--ink); padding-top: 14px; display: flex; flex-direction: column; gap: 4px; }
+.timer small, .rounds small { font-size: 14px; font-weight: 700; color: var(--muted); }
+.timer b { font-size: 88px; font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+.timer b span { font-size: 40px; margin-left: 4px; color: var(--muted); }
+.timer p { font-size: 15px; color: var(--muted); }
+.rounds { display: flex; flex-direction: column; gap: 8px; }
+.rounds div { display: flex; gap: 6px; }
+.rounds i { flex: 1; height: 6px; border-radius: 2px; background: var(--surface-2); transition: background-color .3s; }
+.rounds i.on { background: var(--llm); }
+.feed { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+.feed li { font-size: 16px; line-height: 1.35; padding-left: 16px; position: relative; animation: rise .35s var(--ease) both; }
+.feed li::before { content: ""; position: absolute; left: 0; top: 7px; width: 8px; height: 8px; border-radius: 2px; background: var(--line-strong); }
+.feed--llm::before { background: var(--llm) !important; }
+.feed--code::before { background: var(--sign-black) !important; box-shadow: inset 0 0 0 2px var(--sign-yellow); }
+.feed--stop { color: var(--crit); font-weight: 600; }
+.feed--stop::before { background: var(--sign-red) !important; }
+.feed--pass::before { background: var(--human) !important; }
+.feed--human { font-weight: 700; }
+.feed--human::before { background: var(--human) !important; }
+.live-next { margin-top: auto; display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 700; animation: rise .4s var(--ease) both; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

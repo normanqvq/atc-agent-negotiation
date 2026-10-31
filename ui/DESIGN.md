@@ -8,6 +8,7 @@
 |---|---|---|
 | Problem | Intro | 問題 + 三個桌子、規則、人簽名的架構 |
 | Live run | Set the conditions | 評審選天氣、跑道等條件和一班真實航班，按 Run（或 →） |
+| Live run | Negotiating live | 按 Run 後的動畫：資料 → 程式產生候選 → 三個 Haiku → 規則閘門 → Chief → 方案。右邊計時器在等後端時是真實計時，回來後凍結在後端的 `meta.elapsed_s`，然後把紀錄一步步播一遍 |
 | Live run | 航班 + 時間軸 | 這班飛機晚多久、程式產生了哪些候選時段 |
 | Live run | Round 1 | 三個 agent 各說一句 |
 | Live run | Blocked | 被規則擋下的提案放大：規則、出處、Chief 的折衷 |
