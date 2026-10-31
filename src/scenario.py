@@ -63,7 +63,10 @@ def build_scenario(pool_index, env):
         "fuel_endurance_min": FUEL_ENDURANCE.get(env["aircraft_status"], 70),
         "min_reserve_min": MIN_RESERVE,
         "connecting_pax": 32 if env["passengers"] == "many_connecting" else 6,
-        "connection_cutoff": fmt(eta + 35),
+        # deviation from the issue #2 table (ETA+35 for both): with candidates only up to
+        # ETA+30 nobody ever missed a connection, so Pilot had nothing to argue for.
+        # many_connecting now has a tight bank: candidates later than ETA+15 miss it.
+        "connection_cutoff": fmt(eta + (15 if env["passengers"] == "many_connecting" else 35)),
         "crew_shift_end": fmt(eta + (25 if env["ground_crew"] == "shift_ending" else 120)),
         "flight_crew_duty_left_min": CREW_DUTY_LEFT,
         "next_leg_departure": fmt(eta + 75),

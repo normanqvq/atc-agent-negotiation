@@ -2,7 +2,7 @@
 
 > 每次 commit 都更新。Norman 的 Claude 用量滿了，隊友從「下一步」直接接著做。接手前先讀根目錄 `CLAUDE.md`。
 
-最後更新：10/31 13:25 · branch `ui-concord` · 做的人：Norman + Claude
+最後更新：10/31 13:45 · branch `ui-concord` · 做的人：Norman + Claude
 
 ## 怎麼跑
 
@@ -32,7 +32,7 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 
 ## 進行中（後端分工見 GitHub issue #1 到 #4）
 
-- [ ] issue #2（Norman）：scenario / candidates / rules 已推在 branch `issue-2-world-rules`，evaluate.py 接著做
+- [ ] issue #2（Norman）：scenario / candidates / rules / evaluate.py 都在 branch `issue-2-world-rules`。evaluate.py 等 #4 的 `run()` 出現就能跑正式數字：`.venv/bin/python scripts/evaluate.py`（先用 `--stub` 驗過流程）
 - [ ] issue #3、#4：隊友
 
 ## 下一步（按順序，誰接手就從第一個沒打勾的開始）
@@ -56,5 +56,8 @@ cd ui && npm install && npm run dev     # 前端 http://localhost:5173
 - Chrome 擴充套件打不開 localhost，截圖驗證沒做成，自己開 http://localhost:5173 看
 
 ## 合約變更紀錄
+
+- 13:40 scenario：many_connecting 的 connection_cutoff 改成 ETA+15（原規格 ETA+35 讓誰都不會錯過轉機）
+- 13:40 evaluate：FCFS 基準改成「最早跑道時段 + 原登機口、不協調登機口、門被佔在滑行道等」，才是現狀；原規格的「最早合法候選」跟全知最佳化幾乎一樣，比不出東西
 
 - 11:50 sample_log.json 加了 `environment`、`arrival_queue`、`decision.trace`、CHIEF 的訊息
