@@ -9,7 +9,7 @@ from src.candidates import build_candidates
 from src.rules import check_all, first_block
 from src.chief import rule_on_round, final_pick
 
-from src.agents import AGENTS, ask_agents
+from src.agents import AGENTS, ask_agents, ai_available
 
 MAX_ROUNDS = 3
 ROOT = Path(__file__).resolve().parents[1]
@@ -89,6 +89,8 @@ def run(pool_index: int, env: dict) -> dict:
     legal = [c for c in candidates if first_block(world, c) is None]
     if not legal:
         log["rule_checks"] = [dict(first_block(world, c), candidate=c["id"]) for c in candidates]
+        # nothing to negotiate, so no agent ran; the AI was not "off", say whether it was available
+        log["meta"]["ai_enabled"] = ai_available()
     else:
         proposal = None
         consensus = False
