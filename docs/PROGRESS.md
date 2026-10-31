@@ -2,7 +2,7 @@
 
 > Updated with every commit. If Norman's Claude runs out of usage, a teammate continues from "Next". Read the root `CLAUDE.md` first.
 
-Last update: 31 Oct 13:40 · branch `main` · Norman + Claude
+Last update: 31 Oct 13:55 · branch `main` · Norman + Claude
 
 ## How to run
 
@@ -21,16 +21,18 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 - [x] UI v3 (Ma Mingyang): 1600x900 stage, one idea per screen, design notes in `ui/DESIGN.md`
 - [x] Issue #4 (Chris, PR #5 merged): `src/chief.py`, `src/negotiation.py`, `src/api.py`, `src/main.py`, temporary `src/integration_agents.py` until #3 lands. Checked locally: health, run, 422, blocked and no_safe_plan paths
 - [x] Real `scripts/evaluate.py` run with rule-based agents (no API key): `data/sample_eval.json` and `docs/EVAL.md` are real numbers now. Rerun once #3's Haiku agents are in
+- [x] Issue #3 (PR #8): Simon's `src/agents.py` on main, temporary adapter removed. 80-run sweep and API smoke pass without a key
+- [x] PR #7: rule-based evaluation numbers and English handoff doc
 - [x] Issue #2 (Norman): `src/scenario.py`, `src/candidates.py`, `src/rules.py`, `scripts/evaluate.py`. Reviewed and merged. 20 flights x 4 condition sets run clean
 
 ## In progress (backend split is in GitHub issues #1 to #4)
 
-- [ ] Issue #3 (agents): unassigned. Only missing piece; everything else runs with the rule fallback
+- [ ] Real Haiku test: nobody has run the agents with a key yet. Steps in `docs/TESTING.md` and GitHub issue #9
 
 ## Next (whoever picks this up starts at the first unchecked item)
 
-1. [ ] `src/agents.py` (issue #3), then delete `src/integration_agents.py`
-2. [ ] Rerun `ANTHROPIC_API_KEY=... .venv/bin/python scripts/evaluate.py` with Haiku, check the Evidence and Failure screens
+1. [ ] Run `docs/TESTING.md` steps 1 to 4 with a real key (issue #9)
+2. [ ] Rerun `scripts/evaluate.py` with Haiku, open a PR with the new numbers (step 5)
 4. [ ] Add a 25 s timeout and a shape check to `ui/src/lib/run.js` (the UI currently trusts the backend blindly)
 5. [ ] Fill team names on the intro screen
 6. [ ] Rehearse twice under 3 minutes with the backend off once (replay mode)
