@@ -21,3 +21,4 @@ logs/*.jsonl
 .idea/
 ui/dist/
 ui/node_modules/
+.venv/
