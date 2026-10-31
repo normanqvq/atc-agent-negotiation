@@ -10,6 +10,8 @@ import TraceScene from './demo/TraceScene.jsx'
 import FailureScene from './demo/FailureScene.jsx'
 import EvidenceScene from './demo/EvidenceScene.jsx'
 import CloseScene from './demo/CloseScene.jsx'
+import Weather from './demo/Weather.jsx'
+import ConditionSigns from './demo/ConditionSigns.jsx'
 import Icon from './Icon.jsx'
 import poolFile from '../../data/pool.json'
 import { defaultEnvironment } from './lib/scenario.js'
@@ -119,11 +121,20 @@ export default function App() {
     }
   }
 
+  // the judge's conditions show on screen during the live run: weather behind everything,
+  // the other choices as signs in the corner. on the setup page it follows the buttons as they click
+  const liveRun = step.act === 1
+  const shownEnv = step.id === 'setup' ? env : ranEnv
+
   return (
     <div className="viewport">
       <div className="stage" style={{ width: STAGE_W, height: STAGE_H, transform: `translate(-50%, -50%) scale(${scale})` }}>
+        {liveRun && <Weather weather={shownEnv.weather} />}
+
         {/* only the current screen is mounted, so its entrance animation plays every time */}
         <div className="page" key={idx + step.id}>{renderStep()}</div>
+
+        {liveRun && step.id !== 'setup' && <ConditionSigns env={ranEnv} />}
 
         <div className="bar">
           <ol className="acts">
