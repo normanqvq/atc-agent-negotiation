@@ -151,14 +151,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .flights-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 12px; border-bottom: 1px solid var(--line); }
 .flights-head h3 { font-family: var(--f-display); font-size: 21px; font-weight: 700; text-transform: uppercase; }
 .flight-list { max-height: 440px; overflow-y: auto; }
-.flight-row { display: grid; grid-template-columns: 18px 80px 90px minmax(0, 1fr) 52px 48px; gap: 10px; align-items: center; padding: 9px 16px; border-bottom: 1px solid var(--line); font-size: 15px; cursor: pointer; }
+.flight-row { display: grid; grid-template-columns: 18px 28px 74px 84px minmax(0, 1fr) 52px 48px; gap: 10px; align-items: center; padding: 9px 16px; border-bottom: 1px solid var(--line); font-size: 15px; cursor: pointer; }
 .flight-row:last-child { border-bottom: 0; }
 .flight-row:hover { background: var(--bg); }
 .flight-row input { margin: 0; accent-color: var(--ink); width: 16px; height: 16px; }
 .flight-row .mono { font-size: 14px; }
+.tailfin { display: block; flex: none; }
 .flight-row .late-by { color: var(--crit); font-weight: 700; text-align: right; }
 .flight-row--on, .flight-row--on:hover { background: var(--llm-soft); }
 .setup-go { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; border-top: 2px solid var(--ink); }
+.setup-pick { display: flex; align-items: center; gap: 14px; }
 .setup-go p { display: flex; flex-direction: column; gap: 2px; font-size: 16px; color: var(--muted); }
 .setup-go p b { font-size: 18px; color: var(--ink); }
 
