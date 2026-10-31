@@ -1,9 +1,9 @@
 {
   "_note": "Written by scripts/evaluate.py. Real runs.",
   "n_events": 60,
-  "pool_note": "60 runs: 20 real ATL arrivals from DOT 2015 x 3 condition sets, pool seed 42, rule-based agents, no API key",
+  "pool_note": "60 runs: 20 real ATL arrivals from DOT 2015 x 3 condition sets, pool seed 42, claude-haiku-5-5 agents",
   "headline": {
-    "consensus_rate": 1.0,
+    "consensus_rate": 0.98,
     "injected_violations_blocked": "16 / 16",
     "delay_vs_fcfs_min": -42.7
   },
@@ -38,15 +38,15 @@
     },
     {
       "name": "Time to decide",
-      "value": "0.0 s per negotiation vs 10 to 15 min of phone calls",
+      "value": "5.5 s per negotiation vs 10 to 15 min of phone calls",
       "source": "measured runtime vs estimate"
     }
   ],
   "failure_case": {
     "row_id": 135473,
-    "summary": "DL1710 (fog + one runway closed + gates tight + shift ending): worst negotiated outcome, cost 130",
-    "what_happened": "Concord landed 117 min late with 0 missed connections; the omniscient optimiser found cost 130.",
-    "why": "The desks converged on a legal but expensive slot because each only sees its own data.",
-    "fix": "Let the chief show the soft cost of every legal option to all desks in round 2."
+    "summary": "DL1710 (fog + one runway closed + gates tight + shift ending): costliest outcome, 117 min late, even the optimum could not do better",
+    "what_happened": "Concord and the omniscient optimiser picked the same plan (cost 130): 117 min late, 0 missed connections, 25 min ramp overtime.",
+    "why": "The conditions left only expensive legal slots. Negotiation cannot create runway capacity or gates that do not exist.",
+    "fix": "Add diversion airports and later slots as candidates, and let the Pilot desk weigh a diversion against a long hold."
   }
 }
