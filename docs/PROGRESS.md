@@ -2,7 +2,7 @@
 
 > Updated with every commit. If Norman's Claude runs out of usage, a teammate continues from "Next". Read the root `CLAUDE.md` first.
 
-Last update: 31 Oct 13:32 · branch `main` · Norman + Claude
+Last update: 31 Oct 13:40 · branch `main` · Norman + Claude
 
 ## How to run
 
@@ -19,19 +19,18 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 - [x] Contracts: `data/sample_log.json`, `data/sample_eval.json`, `data/rules.json`; field list in `docs/API.md`
 - [x] `scripts/build_pool.py` and a real 20-flight `data/pool.json` from the flights.csv subset (358k rows, ATL arrivals)
 - [x] UI v3 (Ma Mingyang): 1600x900 stage, one idea per screen, design notes in `ui/DESIGN.md`
+- [x] Issue #4 (Chris, PR #5 merged): `src/chief.py`, `src/negotiation.py`, `src/api.py`, `src/main.py`, temporary `src/integration_agents.py` until #3 lands. Checked locally: health, run, 422, blocked and no_safe_plan paths
+- [x] Real `scripts/evaluate.py` run with rule-based agents (no API key): `data/sample_eval.json` and `docs/EVAL.md` are real numbers now. Rerun once #3's Haiku agents are in
 - [x] Issue #2 (Norman): `src/scenario.py`, `src/candidates.py`, `src/rules.py`, `scripts/evaluate.py`. Reviewed and merged. 20 flights x 4 condition sets run clean
 
 ## In progress (backend split is in GitHub issues #1 to #4)
 
-- [ ] Issue #3 (agents): unassigned
-- [ ] Issue #4 (chief, negotiation, api): unassigned
-- [ ] Real evaluation numbers: run `.venv/bin/python scripts/evaluate.py` as soon as `src/negotiation.run` exists. It overwrites `data/sample_eval.json` and writes `docs/EVAL.md`. `--stub` checks the pipeline without the negotiation
+- [ ] Issue #3 (agents): unassigned. Only missing piece; everything else runs with the rule fallback
 
 ## Next (whoever picks this up starts at the first unchecked item)
 
-1. [ ] `src/agents.py` (issue #3)
-2. [ ] `src/chief.py`, `src/negotiation.py`, `src/api.py`, `src/main.py` (issue #4)
-3. [ ] Run `scripts/evaluate.py` for real, check the Evidence and Failure screens
+1. [ ] `src/agents.py` (issue #3), then delete `src/integration_agents.py`
+2. [ ] Rerun `ANTHROPIC_API_KEY=... .venv/bin/python scripts/evaluate.py` with Haiku, check the Evidence and Failure screens
 4. [ ] Add a 25 s timeout and a shape check to `ui/src/lib/run.js` (the UI currently trusts the backend blindly)
 5. [ ] Fill team names on the intro screen
 6. [ ] Rehearse twice under 3 minutes with the backend off once (replay mode)
