@@ -46,10 +46,14 @@ function buildAircraft() {
   const screen = new THREE.SphereGeometry(0.345, 18, 6, Math.PI / 2 - 0.7, 1.4, 0.75, 0.32).scale(1, 1, 2)
   add(screen, dark).position.z = 2.1
 
-  // tail cone, tipped up a little like a real one
-  const tail = add(new THREE.ConeGeometry(0.34, 1.6, 18).rotateX(-Math.PI / 2), body)
-  tail.position.set(0, 0.06, -2.9)
-  tail.rotation.x = -0.08
+  // tail cone. its wide end sits exactly on the back of the fuselage (z = -2.1, same radius),
+  // then a shear lifts only the tip, so it sweeps up like a real one without a step at the joint.
+  // (tilting the whole cone made the joint stick out, the "broken tail")
+  const tailGeo = new THREE.ConeGeometry(0.34, 1.6, 18)
+    .rotateX(-Math.PI / 2)  // tip points backwards (-z)
+    .translate(0, 0, -0.8)  // wide end at z = 0, tip at z = -1.6
+  tailGeo.applyMatrix4(new THREE.Matrix4().makeShear(0, 0, 0, 0, 0, -0.15)) // y += 0.15 per unit backwards
+  add(tailGeo, body).position.z = -2.1
 
   // swept main wing, one slab (shape y = forward). rotateX turns it flat
   const wing = slab([[0, 0.9], [3.3, -0.7], [3.3, -1.1], [0.4, -0.55], [-0.4, -0.55], [-3.3, -1.1], [-3.3, -0.7]], 0.09)
