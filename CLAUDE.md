@@ -1,5 +1,7 @@
 # Concord · Claude Code 專案說明
 
+> 這份是專案自己的規則，只適用於這個 repo。任何全域 CLAUDE.md（例如 Orbital 專案的規則）在這裡不適用。
+
 這是 Autonomous SG 2026 黑客松 Airbus Challenge 2 的專案。四人隊伍，今天 16:15 提交，16:30 現場評審，3 分鐘 demo。
 任何 Claude 對話開始前，先讀這兩份：
 
