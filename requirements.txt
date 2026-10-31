@@ -1,3 +1,6 @@
 pandas
 python-dotenv
 pytest
+fastapi
+uvicorn
+anthropic

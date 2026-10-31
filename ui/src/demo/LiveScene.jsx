@@ -68,6 +68,8 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
   const round = cur && cur.round ? cur.round : answered
   const asking = cur && cur.type === 'ask'
   const done = log && beat >= beats.length - 1
+  const aiEnabled = !log || log.meta?.ai_enabled !== false
+  const noSafePlan = log?.decision.status === 'no_safe_plan'
   const msgs = r => (log.rounds.find(x => x.round === r) || { messages: [] }).messages
   const chief = ruled ? msgs(ruled).find(m => m.agent === 'CHIEF') : null
 
@@ -111,7 +113,7 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
   return (
     <section className="scene scene--live">
       <div className="scene-head">
-        <h2>{done ? 'Negotiated.' : 'Negotiating live'}</h2>
+        <h2>{done ? (noSafePlan ? 'No safe plan.' : 'Negotiated.') : 'Negotiating live'}</h2>
       </div>
 
       <div className="live">
@@ -156,7 +158,7 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
             return (
               <div key={a} className={'node node--agent' + (thinking ? ' thinking' : '') + (blocked ? ' blocked' : '')}
                 style={{ left: X[a] - 160, top: 210 }}>
-                <div className="agent-head"><h3>{label}</h3><span className="haiku">Haiku</span></div>
+                <div className="agent-head"><h3>{label}</h3><span className="haiku">{aiEnabled ? 'Haiku' : 'Rules'}</span></div>
                 {thinking && <p className="agent-think">thinking<span>.</span><span>.</span><span>.</span></p>}
                 {!thinking && m && (
                   <div className="agent-say" key={m.id}>
@@ -164,7 +166,7 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
                     <p>{m.text}</p>
                   </div>
                 )}
-                {!thinking && !m && <p className="agent-think">waiting</p>}
+                {!thinking && !m && <p className="agent-think">{noSafePlan ? 'not called · no legal candidates' : 'waiting'}</p>}
               </div>
             )
           })}
@@ -189,7 +191,7 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
           {/* chief */}
           <div className={'node node--chief' + (chief ? ' on' : '')} style={{ left: 0, top: 480 }}>
             <span className="who">Chief · code</span>
-            <p key={chief ? chief.id : 'none'}>{chief ? chief.text : 'waits for all three answers'}</p>
+            <p key={chief ? chief.id : 'none'}>{chief ? chief.text : noSafePlan ? 'All candidates blocked. Hand to the duty manager.' : 'waits for all three answers'}</p>
           </div>
 
           {/* plan */}
@@ -205,11 +207,11 @@ export default function LiveScene({ log, flight, env, runStart, runMs }) {
         <aside className="live-side">
           <div className="timer">
             <small>{running ? 'Elapsed' : 'Negotiated in'}</small>
-            <b className="mono">{(ms / 1000).toFixed(1)}<span>s</span></b>
-            <p>3 Haiku agents, called in parallel each round{log && log.meta && log.meta.tokens ? ` · ${log.meta.tokens} tokens` : ''}</p>
+            <b className="mono">{(ms / 1000).toFixed(ms < 1 ? 6 : ms < 100 ? 3 : 1)}<span>s</span></b>
+            <p>{aiEnabled ? '3 Haiku agents, called in parallel each round' : 'Rule-based fallback · AI disabled'}{log?.meta ? ` · ${log.meta.tokens} tokens` : ''}</p>
           </div>
           <div className="rounds">
-            <small>Round {round || 1} of max 3</small>
+            <small>{noSafePlan ? 'No legal candidates · 0 rounds' : `Round ${round || 1} of max 3`}</small>
             <div>{[1, 2, 3].map(i => <i key={i} className={i <= (round || 0) ? 'on' : ''} />)}</div>
           </div>
           <ol className="feed">
