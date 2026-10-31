@@ -2,7 +2,7 @@
 
 > Updated with every commit. If Norman's Claude runs out of usage, a teammate continues from "Next". Read the root `CLAUDE.md` first.
 
-Last update: 31 Oct 13:55 · branch `main` · Norman + Claude
+Last update: 31 Oct 14:30 · branch `main` · Norman + Claude
 
 ## How to run
 
@@ -21,13 +21,17 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 - [x] UI v3 (Ma Mingyang): 1600x900 stage, one idea per screen, design notes in `ui/DESIGN.md`
 - [x] Issue #4 (Chris, PR #5 merged): `src/chief.py`, `src/negotiation.py`, `src/api.py`, `src/main.py`, temporary `src/integration_agents.py` until #3 lands. Checked locally: health, run, 422, blocked and no_safe_plan paths
 - [x] Real `scripts/evaluate.py` run with rule-based agents (no API key): `data/sample_eval.json` and `docs/EVAL.md` are real numbers now. Rerun once #3's Haiku agents are in
+- [x] Real Haiku test done (Simon, issue #9): agents 5.6 s/round, full run 12-15 s, 60-run evaluation 98% consensus, 16/16 blocked, 0 fallbacks. Three UI scenarios screenshotted on flight 16
+- [x] PR #12: Haiku evaluation numbers in `data/sample_eval.json` and `docs/EVAL.md`
+- [x] PR #13: no-plan label, replay badge when the backend is off, 25 s fetch timeout and shape check
+- [x] PR #11: chief text dedupe, honest failure case, UI opens on flight 16
 - [x] Issue #3 (PR #8): Simon's `src/agents.py` on main, temporary adapter removed. 80-run sweep and API smoke pass without a key
 - [x] PR #7: rule-based evaluation numbers and English handoff doc
 - [x] Issue #2 (Norman): `src/scenario.py`, `src/candidates.py`, `src/rules.py`, `scripts/evaluate.py`. Reviewed and merged. 20 flights x 4 condition sets run clean
 
-## In progress (backend split is in GitHub issues #1 to #4)
+## In progress
 
-- [ ] Real Haiku test: nobody has run the agents with a key yet. Steps in `docs/TESTING.md` and GitHub issue #9
+- [ ] Rehearsal and submission (below). Code is feature-complete.
 
 ## Next (whoever picks this up starts at the first unchecked item)
 
